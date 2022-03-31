@@ -79,12 +79,23 @@ class CategoryDetailVC: UIViewController {
         collectionView.register(ProductCell.self, forCellWithReuseIdentifier: "ProductCell")
         return collectionView;
     }()
+    private var id: String
+   
+    init(id: String) {
+        self.id = id
+        super.init(nibName: nil, bundle: nil)
+    }
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
         txtField.left(image: UIImage(named: "search"), mode: .always)
         configNav()
         setupViews()
+        getCategoryDetail()
     }
     @objc func didTapCartButton(sender: AnyObject){
         
@@ -92,6 +103,21 @@ class CategoryDetailVC: UIViewController {
     
     @objc func didTapHomeButton(sender: AnyObject){
         
+    }
+    
+    private func getCategoryDetail() {
+        ServiceManager.shared.sendRequest(request: SubCategoryRequest(id: ""), model: CategoryModel.self) { result in
+            switch result {
+            case .success(let response):
+                if response.success ?? false {
+                    DispatchQueue.main.async {
+                       
+                    }
+                }
+            case .failure(let error):
+                print(error)
+            }
+        }
     }
   
 
@@ -147,38 +173,38 @@ extension CategoryDetailVC {
             make.centerY.equalTo(txtField.snp.centerY)
         }
         
-        if !changeView.isDescendant(of: view) {
-            view.addSubview(changeView)
-        }
-        changeView.snp.makeConstraints{ (make) -> Void in
-            make.height.equalTo(44)
-            make.trailing.equalTo(view.snp.trailing).offset(-16)
-            make.leading.equalTo(view.snp.leading).offset(16)
-            make.top.equalTo(txtField.snp.bottom).offset(16)
-        }
-        
-        if !lblCar.isDescendant(of: changeView) {
-            changeView.addSubview(lblCar)
-        }
-        lblCar.snp.makeConstraints{ (make) -> Void in
-            make.leading.equalTo(changeView.snp.leading).offset(16)
-            make.centerY.equalTo(changeView.snp.centerY)
-        }
-        
-        
-        if !changeBtn.isDescendant(of: changeView) {
-            changeView.addSubview(changeBtn)
-        }
-        changeBtn.snp.makeConstraints{ (make) -> Void in
-            make.trailing.equalTo(changeView.snp.trailing).offset(-16)
-            make.centerY.equalTo(changeView.snp.centerY)
-        }
-        
+//        if !changeView.isDescendant(of: view) {
+//            view.addSubview(changeView)
+//        }
+//        changeView.snp.makeConstraints{ (make) -> Void in
+//            make.height.equalTo(44)
+//            make.trailing.equalTo(view.snp.trailing).offset(-16)
+//            make.leading.equalTo(view.snp.leading).offset(16)
+//            make.top.equalTo(txtField.snp.bottom).offset(16)
+//        }
+//
+//        if !lblCar.isDescendant(of: changeView) {
+//            changeView.addSubview(lblCar)
+//        }
+//        lblCar.snp.makeConstraints{ (make) -> Void in
+//            make.leading.equalTo(changeView.snp.leading).offset(16)
+//            make.centerY.equalTo(changeView.snp.centerY)
+//        }
+//
+//
+//        if !changeBtn.isDescendant(of: changeView) {
+//            changeView.addSubview(changeBtn)
+//        }
+//        changeBtn.snp.makeConstraints{ (make) -> Void in
+//            make.trailing.equalTo(changeView.snp.trailing).offset(-16)
+//            make.centerY.equalTo(changeView.snp.centerY)
+//        }
+//
         if !collectionView.isDescendant(of: view) {
             view.addSubview(collectionView)
         }
         collectionView.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(changeView.snp.bottom).offset(24)
+            make.top.equalTo(txtField.snp.bottom).offset(24)
             make.leading.equalTo(self.view)
             make.trailing.equalTo(self.view)
             make.bottom.equalTo(self.view)
@@ -208,4 +234,45 @@ extension CategoryDetailVC: UICollectionViewDataSource, UICollectionViewDelegate
         return UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
     }
     
+}
+
+
+class CategoryDetailRequest : RequestModel {
+    
+    var id: String?
+    var min: Int?
+    var max: Int?
+    var sub_category_id: String?
+    var brand_id: String?
+    var title: String?
+   
+    init(id: String, min: Int, max: Int, sub_category_id: String, brand_id: String, title: String) {
+        self.id = id
+        self.min = min
+        self.max = max
+        self.sub_category_id = sub_category_id
+        self.brand_id = brand_id
+        self.title = title
+        
+    }
+    override var path: String {
+        return Constant.ServiceConstant.SUB_CATEGORIES
+    }
+    override var headers: [String : String] {
+        return [
+            "Content-Type" : "application/json",
+            "language_id": "1"
+        ]
+    }
+    override var parameters: [String: Any?] {
+        return
+            [
+                "parent_id": id,
+                "min": min,
+                "max": max,
+                "sub_category_id": sub_category_id,
+                "brand_id": brand_id,
+                "title": title
+            ]
+    }
 }

@@ -26,6 +26,18 @@ class CarMaintanceVC: UIViewController {
         collectionView.register(ProductCell.self, forCellWithReuseIdentifier: "ProductCell")
         return collectionView;
     }()
+    
+    private var parent_id: String
+   
+    init(parent_id: String) {
+        self.parent_id = parent_id
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         configNav()
@@ -49,7 +61,7 @@ extension CarMaintanceVC {
     
     fileprivate func setupViews() {
         edgesForExtendedLayout = []
-        let vehicleMilangeView = PickerFieldView(title: "Select your vehicle mileage", placeholder: "500 KM", icon: "down") { text in
+        let vehicleMilangeView = PickerFieldView(title: "Select your vehicle mileage", placeholder: "500 KM", icon: "down") {
             
         }
         vehicleMilangeView.lblStar.isHidden = true

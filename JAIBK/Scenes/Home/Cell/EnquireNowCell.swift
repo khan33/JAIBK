@@ -70,7 +70,7 @@ class EnquireNowCell: UICollectionViewCell {
         if !containerView.isDescendant(of: contentView) {
             contentView.addSubview(containerView)
         }
-        containerView.snp.remakeConstraints { make in
+        containerView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
             make.width.equalToSuperview()
             make.height.equalToSuperview()
@@ -79,12 +79,12 @@ class EnquireNowCell: UICollectionViewCell {
         if !imageView.isDescendant(of: containerView) {
             containerView.addSubview(imageView)
         }
-        imageView.snp.remakeConstraints { make in
-            make.edges.equalToSuperview()
-            make.width.equalToSuperview()
-            make.height.equalToSuperview()
+        imageView.snp.makeConstraints { make in
+            make.top.leading.trailing.bottom.equalToSuperview()
         }
-        imageView.layer.cornerRadius = 15
+        
+        imageView.contentMode = .scaleAspectFill
+        
         if !lblName.isDescendant(of: containerView){
             containerView.addSubview(lblName)
         }

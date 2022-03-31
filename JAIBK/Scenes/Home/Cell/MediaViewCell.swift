@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SDWebImage
 
 class MediaViewCell: UICollectionViewCell {
     private (set) lazy var containerView: UIView = { [unowned self] in
@@ -41,6 +42,7 @@ class MediaViewCell: UICollectionViewCell {
         lbl.text = "We’ll make your car feel brand new"
         lbl.font = UIFont(name: AppFontName.bold, size: 14)
         lbl.textColor = .white
+        lbl.textAlignment = .left
         return lbl
     }()
     
@@ -73,41 +75,52 @@ class MediaViewCell: UICollectionViewCell {
         if !containerView.isDescendant(of: contentView) {
             contentView.addSubview(containerView)
         }
-        containerView.snp.remakeConstraints { make in
-            make.edges.equalToSuperview()
-            make.width.equalToSuperview()
-            make.height.equalToSuperview()
+        containerView.snp.makeConstraints { make in
+            make.top.leading.trailing.bottom.equalTo(contentView)
         }
-        
+        containerView.layer.cornerRadius = 14
         if !itemImageView.isDescendant(of: containerView){
             containerView.addSubview(itemImageView)
         }
+        itemImageView.contentMode = .scaleAspectFill
         itemImageView.snp.makeConstraints { make in
             make.top.leading.trailing.bottom.equalTo(containerView)
         }
         if !coverImgView.isDescendant(of: containerView){
             containerView.addSubview(coverImgView)
         }
+        coverImgView.contentMode = .scaleAspectFill
         coverImgView.snp.makeConstraints { make in
             make.top.leading.trailing.bottom.equalTo(containerView)
         }
-        
-        
+
+//
         if !lblName.isDescendant(of: containerView){
             containerView.addSubview(lblName)
         }
         lblName.snp.makeConstraints { make in
-            make.bottom.equalTo(coverImgView.snp.bottom).offset(-16)
+            make.bottom.equalTo(coverImgView.snp.bottom).offset(-24)
             make.leading.equalTo(coverImgView.snp.leading).offset(16)
             make.centerX.equalTo(coverImgView.snp.centerX)
         }
-        
+
         if !lblDate.isDescendant(of: containerView){
             containerView.addSubview(lblDate)
         }
         lblDate.snp.makeConstraints { make in
             make.bottom.equalTo(lblName.snp.top).offset(-10)
             make.leading.equalTo(coverImgView.snp.leading).offset(16)
+        }
+    }
+    
+    var mediaItem: Media? {
+        didSet {
+            guard let data = mediaItem else { return }
+            lblName.text = mediaItem?.name
+            lblDate.text = mediaItem?.created_at
+            if let img = mediaItem?.image {
+                itemImageView.sd_setImage(with: URL(string: Constant.baseURL + "images/media/" + img), placeholderImage: UIImage(named: "media"))
+            }
         }
     }
 }

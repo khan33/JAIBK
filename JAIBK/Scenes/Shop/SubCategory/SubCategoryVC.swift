@@ -24,15 +24,24 @@ class SubCategoryVC: UIViewController {
         collectionView.register(SubCategoryCell.self, forCellWithReuseIdentifier: "SubCategoryCell")
         return collectionView;
     }()
+    private var subCategory_data: [CategoryData]?
+    
+    private var parent_id: String
+   
+    init(parent_id: String) {
+        self.parent_id = parent_id
+        super.init(nibName: nil, bundle: nil)
+    }
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         configNav()
         setupViews()
-    }
-    @objc func didTapCartButton(sender: AnyObject){
-        
+        print(parent_id)
+        getSubCategories()
     }
     
     @objc func didTapHomeButton(sender: AnyObject){
@@ -45,6 +54,22 @@ class SubCategoryVC: UIViewController {
         vc.modalPresentationStyle = .fullScreen
         presentAnimate(vc)
         
+    }
+    
+    private func getSubCategories() {
+        ServiceManager.shared.sendRequest(request: SubCategoryRequest(id: parent_id), model: CategoryModel.self) { result in
+            switch result {
+            case .success(let response):
+                if response.success ?? false {
+                    DispatchQueue.main.async {
+                        self.subCategory_data = response.data
+                        self.collectionViewHome.reloadData()
+                    }
+                }
+            case .failure(let error):
+                print(error)
+            }
+        }
     }
 }
 extension SubCategoryVC {
@@ -59,13 +84,11 @@ extension SubCategoryVC {
         backButton.title = "Back"
         navigationController?.navigationBar.topItem?.backBarButtonItem = backButton
         
-        let cartImage    = UIImage(named: "cart")?.withRenderingMode(.alwaysOriginal)
         let homeImage  = UIImage(named: "home")?.withRenderingMode(.alwaysOriginal)
         
 
-        let cartButton   = UIBarButtonItem(image: cartImage,  style: .plain, target: self, action: #selector(didTapCartButton(sender:)))
         let homeButton = UIBarButtonItem(image: homeImage,  style: .plain, target: self, action: #selector(didTapHomeButton(sender:)))
-        navigationItem.rightBarButtonItems = [homeButton, cartButton]
+        navigationItem.rightBarButtonItems = [homeButton]
         
      }
     
@@ -90,12 +113,12 @@ extension SubCategoryVC: UICollectionViewDataSource, UICollectionViewDelegate, U
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 5
+        return subCategory_data?.count ?? 0
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(with: SubCategoryCell.self, for: indexPath)
-        //cell.containerView.setGradientBorder(width: 10, colors: [UIColor.red, UIColor.blue])
+        cell.category = subCategory_data?[indexPath.row]
         return cell
     }
     
@@ -107,8 +130,31 @@ extension SubCategoryVC: UICollectionViewDataSource, UICollectionViewDelegate, U
         return UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
     }
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let vc = CategoryDetailVC()
-        self.navigationController?.pushViewController(vc, animated: false)
+        if let id = subCategory_data?[indexPath.row].id {
+            let vc = CategoryDetailVC(id: id)
+            self.navigationController?.pushViewController(vc, animated: false)
+        }
     }
     
+}
+class SubCategoryRequest : RequestModel {
+    
+    private var id: String
+   
+    init(id: String) {
+        self.id = id
+        
+    }
+    override var path: String {
+        return Constant.ServiceConstant.SUB_CATEGORIES
+    }
+    override var headers: [String : String] {
+        return [
+            "Content-Type" : "application/json",
+            "language_id": "1"
+        ]
+    }
+    override var parameters: [String: Any?] {
+        return ["parent_id": id]
+    }
 }

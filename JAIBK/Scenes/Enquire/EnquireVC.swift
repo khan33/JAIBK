@@ -50,21 +50,17 @@ class EnquireVC: UIViewController {
             .font: UIFont(name: "GothamNarrow-Medium", size: 20)!
         ]
         navigationItem.title = "Enquire"
-        let cartImage    = UIImage(named: "cart")?.withRenderingMode(.alwaysOriginal)
+        
         let homeImage  = UIImage(named: "home")?.withRenderingMode(.alwaysOriginal)
         let menuImage = UIImage(named: "menuIcon")?.withRenderingMode(.alwaysOriginal)
 
-        let cartButton   = UIBarButtonItem(image: cartImage,  style: .plain, target: self, action: #selector(didTapCartButton(sender:)))
         let homeButton = UIBarButtonItem(image: homeImage,  style: .plain, target: self, action: #selector(didTapHomeButton(sender:)))
-        navigationItem.rightBarButtonItems = [homeButton, cartButton]
+        navigationItem.rightBarButtonItems = [homeButton]
 
         let menuButton = UIBarButtonItem(image: menuImage,  style: .plain, target: self, action: #selector(didTapMenuButton(sender:)))
         navigationItem.leftBarButtonItem = menuButton
     }
     
-    @objc func didTapCartButton(sender: AnyObject){
-        
-    }
     
     @objc func didTapHomeButton(sender: AnyObject){
         

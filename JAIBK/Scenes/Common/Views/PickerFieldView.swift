@@ -47,31 +47,26 @@ class PickerFieldView: UIView {
         return view
     }()
     
-    lazy var btn: UIButton = {[unowned self] in
-        let btn = UIButton()
-        btn.backgroundColor = .clear
-        btn.setTitle("", for: .normal)
-        return btn
-        
-    }()
 
     lazy var downBtn: UIButton = {[unowned self] in
         let btn = UIButton()
         btn.backgroundColor = .clear
         btn.setTitle("", for: .normal)
+        
         return btn
         
     }()
     
-    private var enterTextCloser: ((_ text: String) -> Void)!
+    private var enterTextCloser: (() -> Void)!
     var heading: String = ""
-    init(title: String, placeholder: String, icon: String,  enterTextCloser: @escaping (_ text: String) -> Void) {
+    init(title: String, placeholder: String, icon: String,  enterTextCloser: @escaping () -> Void) {
         super.init(frame: CGRect.zero)
         self.enterTextCloser = enterTextCloser
         downBtn.setImage(UIImage(named: icon), for: .normal)
         lblValue.text = title
         setUpContainerView()
         txtField.placeholder = placeholder
+        txtField.delegate = self
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -127,21 +122,28 @@ class PickerFieldView: UIView {
         }
         
         
-        if !btn.isDescendant(of: containerView) {
-            containerView.addSubview(btn)
-        }
-        btn.snp.makeConstraints{ (make) -> Void in
-            make.leading.top.trailing.bottom.equalTo(txtField)
-        }
         
     }
     
     @objc private func textFieldDidChange(textField: UITextField) {
-        enterTextCloser(textField.text ?? "")
+        //enterTextCloser(textField.text ?? "")
     }
+    
     
     func setData(text: String?) {
         txtField.text = text
     }
 
+}
+
+extension PickerFieldView: UITextFieldDelegate {
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+
+        return false
+    }
+    func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
+        print("click here first time...")
+        self.enterTextCloser()
+        return true
+    }
 }

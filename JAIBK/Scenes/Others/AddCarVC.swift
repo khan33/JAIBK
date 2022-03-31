@@ -93,26 +93,26 @@ extension AddCarVC {
             make.leading.trailing.equalToSuperview().inset(8)
             make.bottom.equalToSuperview()
         }
-        let yearView = PickerFieldView(title: "Year", placeholder: "2000", icon: "down") { text in
+        let yearView = PickerFieldView(title: "Year", placeholder: "2000", icon: "down") {
             
         }
 
         stackView.addArrangedSubview(yearView)
         
         
-        let makeView = PickerFieldView(title: "Make", placeholder: "Honda", icon: "down") { text in
+        let makeView = PickerFieldView(title: "Make", placeholder: "Honda", icon: "down") {
             
         }
         stackView.addArrangedSubview(makeView)
         
         
-        let modelView = PickerFieldView(title: "Model", placeholder: "Civic", icon: "down") { text in
+        let modelView = PickerFieldView(title: "Model", placeholder: "Civic", icon: "down") {
             
         }
         stackView.addArrangedSubview(modelView)
         
         
-        let engineView = PickerFieldView(title: "Engine", placeholder: "1.5 V", icon: "down") { text in
+        let engineView = PickerFieldView(title: "Engine", placeholder: "1.5 V", icon: "down") { 
             
         }
         stackView.addArrangedSubview(engineView)

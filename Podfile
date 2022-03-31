@@ -10,5 +10,5 @@ target 'JAIBK' do
 pod 'IQKeyboardManagerSwift'
 pod 'SnapKit'
 pod 'Cosmos', '~> 23.0'
-
+pod 'SDWebImage', '~> 5.0'
 end

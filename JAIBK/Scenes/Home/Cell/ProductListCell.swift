@@ -20,7 +20,6 @@ class ProductListCell: UICollectionViewCell {
         view.contentMode = .scaleAspectFit
         view.clipsToBounds = true
         view.backgroundColor = .clear
-        view.image = UIImage(named: "item")
         return view
     }()
     

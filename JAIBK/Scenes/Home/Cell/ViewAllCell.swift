@@ -35,6 +35,13 @@ class ViewAllCell: UICollectionViewCell {
         return lbl
     }()
     
+    private (set) lazy var AllViewBtn: UIButton = {[unowned self] in
+        let button = UIButton()
+        button.setTitle("", for: .normal)
+        button.backgroundColor = .clear
+        return button
+    }()
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
@@ -80,6 +87,14 @@ class ViewAllCell: UICollectionViewCell {
         lblAllView.snp.makeConstraints { make in
             make.centerY.equalTo(containerView.snp.centerY)
             make.trailing.equalTo(containerView.snp.trailing).offset(0)
+        }
+        
+        
+        if !AllViewBtn.isDescendant(of: containerView) {
+            containerView.addSubview(AllViewBtn)
+        }
+        AllViewBtn.snp.makeConstraints { make in
+            make.top.leading.trailing.bottom.equalTo(lblAllView)
         }
     }
 }

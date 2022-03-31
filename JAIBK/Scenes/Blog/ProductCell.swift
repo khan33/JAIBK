@@ -43,14 +43,16 @@ class ProductCell: UICollectionViewCell {
         lbl.translatesAutoresizingMaskIntoConstraints = false
         lbl.numberOfLines = 1
         lbl.font = UIFont(name: AppFontName.book, size: 11)
-        lbl.text = "CUSTOM WHEELS"
+        lbl.text = ""
+        lbl.textColor = UIColor.hexStringToUIColor(hex: "#000000")
         return lbl
     }()
     
     private (set) lazy var lblBrand: UILabel = {[unowned self] in
         let lbl = UILabel()
-        lbl.font = UIFont(name: AppFontName.book, size: 11)
-        lbl.text = "BRAND NAME"
+        lbl.font = UIFont(name: AppFontName.bold, size: 12)
+        lbl.text = ""
+        lbl.textColor = UIColor.hexStringToUIColor(hex: "#000000")
         return lbl
     }()
     
@@ -59,7 +61,8 @@ class ProductCell: UICollectionViewCell {
         lbl.translatesAutoresizingMaskIntoConstraints = false
         lbl.numberOfLines = 0
         lbl.font = UIFont(name: AppFontName.bold, size: 11)
-        lbl.text = "Sport Body Parts fo Shevrolet 2015-2017"
+        lbl.text = ""
+        lbl.textColor = UIColor.hexStringToUIColor(hex: "#000000")
         return lbl
     }()
     
@@ -67,30 +70,13 @@ class ProductCell: UICollectionViewCell {
     
     private (set) lazy var ratingView: CosmosView = {[unowned self] in
         let cosmosView = CosmosView()
-        cosmosView.rating = 4
+        cosmosView.rating = 0
         cosmosView.settings.updateOnTouch = false
-
         cosmosView.settings.fillMode = .full
-        // Other fill modes: .half, .precise
-
-        // Change the size of the stars
-        cosmosView.settings.starSize = 12
-
-        // Set the distance between stars
-        cosmosView.settings.starMargin = 3
-
-        // Set the color of a filled star
+        cosmosView.settings.starSize = 10
+        cosmosView.settings.starMargin = 2
         cosmosView.settings.filledColor = UIColor.orange
-
-        // Set the border color of an empty star
-        //cosmosView.settings.emptyBorderColor = UIColor.orange
-
-        // Set the border color of a filled star
-        //cosmosView.settings.filledBorderColor = UIColor.orange
-        // Set image for the filled star
         cosmosView.settings.filledImage = UIImage(named: "StarFilled")
-
-        // Set image for the empty star
         cosmosView.settings.emptyImage = UIImage(named: "StarEmpty")
         return cosmosView
     }()
@@ -98,8 +84,9 @@ class ProductCell: UICollectionViewCell {
     
     private (set) lazy var lblReviews: UILabel = {[unowned self] in
         let lbl = UILabel()
-        lbl.font = .systemFont(ofSize: 11, weight: .regular)
-        lbl.text = "(10 Reviews)"
+        lbl.font = UIFont(name: AppFontName.book, size: 10)
+        lbl.text = "(0 Reviews)"
+        lbl.textColor = UIColor.hexStringToUIColor(hex: "#9B9B9B")
         return lbl
     }()
     private (set) lazy var lblPrice: UILabel = {[unowned self] in
@@ -157,7 +144,6 @@ class ProductCell: UICollectionViewCell {
             make.trailing.equalTo(imageContainerView.snp.trailing).offset(-8)
         }
         
-        productImageView.image = UIImage(named: "item")
         
         
         if !lblName.isDescendant(of: productContainerView) {
@@ -191,7 +177,7 @@ class ProductCell: UICollectionViewCell {
             productContainerView.addSubview(ratingView)
         }
         ratingView.snp.makeConstraints { (make) -> Void in
-            make.leading.equalTo(imageContainerView.snp.leading).offset(8)
+            make.leading.equalTo(imageContainerView.snp.leading).offset(4)
 //            make.trailing.equalTo(imageContainerView.snp.trailing).offset(-8)
             make.top.equalTo(lblDesc.snp.bottom).offset(10)
         }
@@ -203,7 +189,7 @@ class ProductCell: UICollectionViewCell {
         }
         lblReviews.snp.makeConstraints { (make) -> Void in
             make.leading.equalTo(ratingView.snp.trailing).offset(8)
-            make.trailing.equalTo(imageContainerView.snp.trailing).offset(-8)
+            //make.trailing.equalTo(imageContainerView.snp.trailing).offset(-8)
             make.centerY.equalTo(ratingView.snp.centerY)
         }
         
@@ -215,6 +201,30 @@ class ProductCell: UICollectionViewCell {
             make.leading.equalTo(imageContainerView.snp.leading).offset(8)
             make.trailing.equalTo(productContainerView.snp.trailing).offset(-8)
             make.top.equalTo(ratingView.snp.bottom).offset(8)
+        }
+    }
+    
+    var product: Products? {
+        didSet {
+            guard let item = product else { return }
+            lblName.text = product?.title
+            lblDesc.text = product?.description
+            if let brand = product?.brand_name {
+                lblBrand.text = "| \(String(describing: brand))"
+            }
+            
+            if let price =  product?.price {
+                lblPrice.text = "AED \(String(describing: price))"
+            }
+            if let img = item.image {
+                productImageView.sd_setImage(with: URL(string: Constant.baseURL + "images/products/" + img), placeholderImage: UIImage(named: "item"))
+            }
+            if let total = product?.total_rating {
+                lblReviews.text = "(\(String(describing: total)) Reviews)"
+            }
+            if let avg_rating = product?.rating_avg {
+                ratingView.rating = Double(avg_rating)
+            }
         }
     }
 }

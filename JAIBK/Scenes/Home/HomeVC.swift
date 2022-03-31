@@ -33,6 +33,11 @@ class HomeVC: UIViewController {
         return collectionView;
     }()
     
+    private var home_data: HomeModel?
+    private var products: [Products]?
+    private var media: [Media]?
+    private var preference: Preferences?
+    private var categories: [Categories]?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -43,22 +48,46 @@ class HomeVC: UIViewController {
             .font: UIFont(name: "GothamNarrow-Medium", size: 20)!
         ]
         navigationItem.title = ""
-        let cartImage    = UIImage(named: "cart")?.withRenderingMode(.alwaysOriginal)
         let homeImage  = UIImage(named: "home")?.withRenderingMode(.alwaysOriginal)
         let menuImage = UIImage(named: "menuIcon")?.withRenderingMode(.alwaysOriginal)
 
-        let cartButton   = UIBarButtonItem(image: cartImage,  style: .plain, target: self, action: #selector(didTapCartButton(sender:)))
+        
         let homeButton = UIBarButtonItem(image: homeImage,  style: .plain, target: self, action: #selector(didTapHomeButton(sender:)))
-        navigationItem.rightBarButtonItems = [homeButton, cartButton]
+        navigationItem.rightBarButtonItems = [homeButton]
 
         let menuButton = UIBarButtonItem(image: menuImage,  style: .plain, target: self, action: #selector(didTapMenuButton(sender:)))
         navigationItem.leftBarButtonItem = menuButton
         setupViews()
+        getHomeProducts()
     }
     
-    @objc func didTapCartButton(sender: AnyObject){
-        
+    
+    private func configCollectionView() {
+        collectionViewHome.reloadData()
     }
+    
+    private func getHomeProducts() {
+        ServiceManager.shared.sendRequest(request: HomeRequest(), model: HomeModel.self) { result in
+            switch result {
+            case .success(let response):
+                if response.success ?? false {
+                    DispatchQueue.main.async {
+                        self.home_data = response
+                        print(self.home_data?.products?.count)
+                        self.products = self.home_data?.products
+                        self.categories = self.home_data?.categories
+                        self.media = self.home_data?.media
+                        self.preference = self.home_data?.preferences
+                        self.configCollectionView()
+                    }
+                }
+            case .failure(let error):
+                print(error)
+            }
+        }
+    }
+    
+    
     
     @objc func didTapHomeButton(sender: AnyObject){
         
@@ -70,6 +99,13 @@ class HomeVC: UIViewController {
         self.navigationController?.pushViewController(vc, animated: false)
         //presentAnimate(vc)
         
+    }
+    
+    @objc func didTapOnAllViewBtn(_ sender: UIButton) {
+        if let product = products {
+            let vc = ProductsVC(products: product)
+            navigationController?.pushViewController(vc, animated: true)
+        }
     }
 }
 
@@ -98,6 +134,7 @@ extension HomeVC {
         navigationController?.pushViewController(vc, animated: true)
     }
     
+    
 }
 extension HomeVC: UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
     
@@ -107,7 +144,9 @@ extension HomeVC: UICollectionViewDataSource, UICollectionViewDelegate, UICollec
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if section == 3 {
-            return 4
+            var count = 0
+            count = products?.count ?? 0 > 3 ? 4 : products?.count ?? 0
+            return count
         }
         return 1
     }
@@ -120,12 +159,16 @@ extension HomeVC: UICollectionViewDataSource, UICollectionViewDelegate, UICollec
             return cell
         } else if indexPath.section == 1 {
             let cell = collectionView.dequeueReusableCell(with: ProductSlider.self, for: indexPath)
+            cell.categories = categories
             return cell
         } else if indexPath.section == 2 {
             let cell = collectionView.dequeueReusableCell(with: ViewAllCell.self, for: indexPath)
+            cell.lblName.text = "Most Popular"
+            cell.AllViewBtn.addTarget(self, action: #selector(didTapOnAllViewBtn), for: .touchUpInside)
             return cell
         } else if indexPath.section == 3 {
             let cell = collectionView.dequeueReusableCell(with: ProductCell.self, for: indexPath)
+            cell.product = products?[indexPath.row]
             return cell
         } else if indexPath.section == 5 {
             let cell = collectionView.dequeueReusableCell(with: ViewAllCell.self, for: indexPath)
@@ -134,10 +177,19 @@ extension HomeVC: UICollectionViewDataSource, UICollectionViewDelegate, UICollec
         }
         else if indexPath.section == 6 {
             let cell = collectionView.dequeueReusableCell(with: LatestMediaCell.self, for: indexPath)
+            cell.media = self.media
             return cell
         }
         else {
             let cell = collectionView.dequeueReusableCell(with: EnquireNowCell.self, for: indexPath)
+            cell.lblName.text = self.preference?.enquire_title
+            cell.lblAllView.text = self.preference?.enquire_b_text
+            if let img = preference?.home_page_enquire_pic
+            {
+                let urlString = Constant.baseURL + "images/home/" + img.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
+                cell.imageView.sd_setImage(with: URL(string: urlString), placeholderImage: UIImage(named: "item"))
+                cell.imageView.layer.cornerRadius = 15
+            }
             return cell
         }
     }
@@ -157,10 +209,10 @@ extension HomeVC: UICollectionViewDataSource, UICollectionViewDelegate, UICollec
             return CGSize(width: collectionView.frame.width / 2, height: 280)
         }
         else if indexPath.section == 6 {
-            return CGSize(width: collectionView.frame.width, height: 200)
+            return CGSize(width: collectionView.frame.width, height: 220)
         }
         else {
-            return CGSize(width: collectionView.frame.width - 20, height: 100)
+            return CGSize(width: collectionView.frame.width - 20, height: 90)
         }
     }
     

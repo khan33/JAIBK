@@ -16,6 +16,7 @@ class LatestMediaCell: UICollectionViewCell {
         collectionView.dataSource = self
         collectionView.register(MediaViewCell.self, forCellWithReuseIdentifier: "MediaViewCell")
         collectionView.backgroundColor = .clear
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
         return collectionView
     }()
     override func awakeFromNib() {
@@ -35,12 +36,17 @@ class LatestMediaCell: UICollectionViewCell {
     private func loadUIView()  {
         contentView.addSubview(collectionView)
         NSLayoutConstraint.activate([
-            collectionView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 0),
-            collectionView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            collectionView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            collectionView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 4),
+            collectionView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            collectionView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             collectionView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
         ])
-        
+    }
+    
+    var media: [Media]? {
+        didSet {
+            collectionView.reloadData()
+        }
     }
 }
 extension LatestMediaCell: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout
@@ -51,6 +57,7 @@ extension LatestMediaCell: UICollectionViewDelegate, UICollectionViewDataSource,
     }
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(with: MediaViewCell.self, for: indexPath)
+        cell.mediaItem = media?[indexPath.row]
         return cell
     }
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {

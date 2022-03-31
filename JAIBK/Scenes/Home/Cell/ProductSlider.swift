@@ -18,6 +18,13 @@ class ProductSlider: UICollectionViewCell {
         collectionView.backgroundColor = .clear
         return collectionView
     }()
+    
+    var categories: [Categories]? {
+        didSet {
+            collectionView.reloadData()
+        }
+    }
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
@@ -47,10 +54,14 @@ extension ProductSlider: UICollectionViewDelegate, UICollectionViewDataSource, U
 {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 16
+        return categories?.count ?? 0
     }
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(with: ProductListCell.self, for: indexPath)
+        cell.lblName.text = categories?[indexPath.row].title
+        if let img = categories?[indexPath.row].image {
+            cell.productImageView.sd_setImage(with: URL(string: Constant.baseURL + "images/categories/" + img), placeholderImage: UIImage(named: "item"))
+        }
         return cell
     }
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {

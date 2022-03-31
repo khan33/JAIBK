@@ -95,4 +95,17 @@ class SubCategoryCell: UICollectionViewCell {
         ImgContentView.layoutIfNeeded()
         ImgContentView.setGradientBorder(width: 2.0, colors: [UIColor.hexStringToUIColor(hex: "#6082E0"), UIColor.hexStringToUIColor(hex: "#49B7B1")])
     }
+    
+    var category: CategoryData? {
+        didSet {
+            guard let data = category else { return }
+            lblName.text = data.title
+            
+            if let img = data.image {
+                print( Constant.baseURL + "images/categories/" + img)
+                productImageView.sd_setImage(with: URL(string: Constant.baseURL + "images/categories/" + img ), placeholderImage: UIImage(named: "item"), options: .retryFailed)
+            }
+        }
+    }
+    
 }
