@@ -38,6 +38,15 @@ class AddAddressVC: UIViewController {
         view.clipsToBounds = true
         return view
     }()
+    
+    private var firstNamtTxt: String = ""
+    private var lastNamtTxt: String = ""
+    private var streetAddressTxt: String = ""
+    private var countryTxt: String = ""
+    private var countryCodeTxt: String = ""
+    private var cityTxt: String = ""
+    private var phoneNoTxt: String = ""
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         configNav()
@@ -71,6 +80,37 @@ class AddAddressVC: UIViewController {
         presentAnimate(vc)
         
     }
+    
+    private func getCountries() {
+        ServiceManager.shared.sendRequest(request: AddressRequestModel.CountryRequest(), model: CountryModel.self) { result in
+            switch result {
+            case .success(let response):
+                if response.success ?? false {
+                    DispatchQueue.main.async {
+                        
+                    }
+                }
+            case .failure(let error):
+                print(error)
+            }
+        }
+    }
+    
+    private func getCities(code: String) {
+        ServiceManager.shared.sendRequest(request: AddressRequestModel.CityRequest(country_code: code), model: CityModel.self) { result in
+            switch result {
+            case .success(let response):
+                if response.success ?? false {
+                    DispatchQueue.main.async {
+                        
+                    }
+                }
+            case .failure(let error):
+                print(error)
+            }
+        }
+    }
+    
 
 }
 extension AddAddressVC {
@@ -106,6 +146,7 @@ extension AddAddressVC {
             make.leading.trailing.equalToSuperview().inset(8)
             make.bottom.equalToSuperview()
         }
+        
         let productInfoView = EnquireTextFieldView(title: "First Name", placeholder: "") { text in
         }
         stackView.addArrangedSubview(productInfoView)
@@ -135,6 +176,47 @@ extension AddAddressVC {
         
         let btnView = CenterButtonView.init(title: "Add Address") { [weak self] (clicked) in
             guard let self = self else {return}
+            if self.firstNamtTxt == "" {
+                self.showAlert(withTitle: "Alert", message: "Enter first name")
+                return
+            }
+            if self.lastNamtTxt == "" {
+                self.showAlert(withTitle: "Alert", message: "Enter last name")
+                return
+            }
+            if self.streetAddressTxt == "" {
+                self.showAlert(withTitle: "Alert", message: "Enter street address")
+                return
+            }
+            
+            if self.countryTxt == "" {
+                self.showAlert(withTitle: "Alert", message: "Select country")
+                return
+            }
+            
+            if self.cityTxt == "" {
+                self.showAlert(withTitle: "Alert", message: "Select city")
+                return
+            }
+            if self.phoneNoTxt == "" {
+                self.showAlert(withTitle: "Alert", message: "Enter phone number")
+                return
+            }
+            
+            let request = AddressRequestModel.AddAddressRequest(first_name: self.firstNamtTxt, last_name: self.lastNamtTxt, street_address: self.streetAddressTxt, country: self.countryCodeTxt, city: self.cityTxt, phone_no: self.phoneNoTxt)
+            ServiceManager.shared.sendRequest(request: request, model: CityModel.self) { result in
+                switch result {
+                case .success(let response):
+                    if response.success ?? false {
+                        DispatchQueue.main.async {
+                            
+                        }
+                    }
+                case .failure(let error):
+                    print(error)
+                }
+            }
+            
         }
         stackView.addArrangedSubview(btnView)
         

@@ -52,7 +52,7 @@ class GarageViewCell: UICollectionViewCell {
         let lbl = UILabel()
         lbl.translatesAutoresizingMaskIntoConstraints = false
         lbl.numberOfLines = 1
-        lbl.text = "1.99 Petrol"
+        lbl.text = ""
         lbl.font = UIFont(name: AppFontName.book, size: 12)
         lbl.textColor = UIColor.hexStringToUIColor(hex: "#000000")
         return lbl
@@ -100,6 +100,17 @@ class GarageViewCell: UICollectionViewCell {
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    var garage: GarageData? {
+        didSet {
+            guard let data = garage else { return }
+            lblProductName.text = data.title
+            lblModelName.text = data.model_name
+            if let img = data.image {
+                productImageView.sd_setImage(with: URL(string: Constant.baseURL + "images/garage/" + img), placeholderImage: UIImage(named: "item"))
+            }
+        }
     }
     
     private func loadUIView()  {

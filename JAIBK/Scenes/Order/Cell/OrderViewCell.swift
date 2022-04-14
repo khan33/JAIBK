@@ -53,6 +53,11 @@ class OrderViewCell: UICollectionViewCell {
         
     }
     
+    private var priceView: PreviewKeyValueView!
+    private var itemsView: PreviewKeyValueView!
+    private var statusView: PreviewKeyValueView!
+    
+    
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -94,7 +99,7 @@ class OrderViewCell: UICollectionViewCell {
         dottedView.layoutIfNeeded()
         dottedView.makeDashedBorderLine(color: UIColor.hexStringToUIColor(hex: "#949494"), strokeLength: 7, gapLength: 5, width: 2, orientation: .horizontal)
         
-        let statusView = PreviewKeyValueView(heading: "Order Status", value: "Shipping")
+        statusView = PreviewKeyValueView(heading: "Order Status", value: "Shipping")
         containerView.addSubview(statusView)
         statusView.snp.makeConstraints{ make in
             make.leading.equalTo(lblOrderId)
@@ -102,7 +107,7 @@ class OrderViewCell: UICollectionViewCell {
             make.top.equalTo(dottedView.snp.bottom)
         }
         
-        let itemsView = PreviewKeyValueView(heading: "Items", value: "2 Items purchased")
+        itemsView = PreviewKeyValueView(heading: "Items", value: "2 Items purchased")
         containerView.addSubview(itemsView)
         itemsView.snp.makeConstraints{ make in
             make.leading.equalTo(lblOrderId)
@@ -110,7 +115,7 @@ class OrderViewCell: UICollectionViewCell {
             make.top.equalTo(statusView.snp.bottom)
         }
         
-        let priceView = PreviewKeyValueView(heading: "Price", value: "AED 300.00")
+        priceView = PreviewKeyValueView(heading: "Price", value: "AED 300.00")
         containerView.addSubview(priceView)
         priceView.snp.makeConstraints{ make in
             make.leading.equalTo(lblOrderId)
@@ -120,4 +125,20 @@ class OrderViewCell: UICollectionViewCell {
         priceView.lblValue.font = UIFont(name: AppFontName.bold, size: 12)
         priceView.lblHeading.font = UIFont(name: AppFontName.bold, size: 12)
     }
+    
+    
+    
+    var order: OrderData? {
+        didSet {
+            guard let data = order else { return }
+            lblOrderId.text = data.order_id
+            lblOrderDate.text = data.added_on
+            itemsView.lblValue.text = "\(data.items!) Items purchased"
+            statusView.lblValue.text = data.status
+            priceView.lblValue.text = "AED \(data.price!)"
+        }
+    }
+    
+    
+    
 }

@@ -25,9 +25,12 @@ class BlogVC: UIViewController {
         collectionView.register(BlogViewCell.self, forCellWithReuseIdentifier: "BlogViewCell")
         return collectionView;
     }()
+    private var blogData: [BlogData]?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         loadUIView()
+        getBlogList()
         
     }
     private func loadUIView()  {
@@ -44,6 +47,22 @@ class BlogVC: UIViewController {
             make.trailing.equalTo(self.view)
         }
     }
+    
+    private func getBlogList() {
+        ServiceManager.shared.sendRequest(request: BlogRequest(), model: BlogModel.self) { result in
+            switch result {
+            case .success(let response):
+                if response.success ?? false {
+                    DispatchQueue.main.async {
+                        self.blogData = response.data
+                        self.collectionView.reloadData()
+                    }
+                }
+            case .failure(let error):
+                print(error)
+            }
+        }
+    }
 
 }
 //MARK: - Collection Delegete
@@ -54,11 +73,12 @@ extension BlogVC: UICollectionViewDataSource, UICollectionViewDelegate, UICollec
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         
-        return 10
+        return blogData?.count ?? 0
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(with: BlogViewCell.self, for: indexPath)
+        cell.data = blogData?[indexPath.row]
         return cell
     }
     
@@ -74,7 +94,11 @@ extension BlogVC: UICollectionViewDataSource, UICollectionViewDelegate, UICollec
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        
+        if let id = blogData?[indexPath.row].id {
+            let vc = BlogDetailVC(id: id)
+            self.navigationController?.pushViewController(vc, animated: true)
+        }
     }
     
 }
+

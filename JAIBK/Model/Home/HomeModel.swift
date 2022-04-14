@@ -28,13 +28,4 @@ struct HomeModel : Codable {
 		case media = "media"
 	}
 
-	init(from decoder: Decoder) throws {
-		let values = try decoder.container(keyedBy: CodingKeys.self)
-		success = try values.decodeIfPresent(Bool.self, forKey: .success)
-		products = try values.decodeIfPresent([Products].self, forKey: .products)
-		categories = try values.decodeIfPresent([Categories].self, forKey: .categories)
-		preferences = try values.decodeIfPresent(Preferences.self, forKey: .preferences)
-		media = try values.decodeIfPresent([Media].self, forKey: .media)
-	}
-
 }

@@ -93,11 +93,11 @@ extension ProductsVC {
     }
     
     @objc func didTapOnCarSearchBtn(_ sender: UIButton) {
-        let vc = SearchByCarVC()
+        let vc = SearchVC()
         navigationController?.pushViewController(vc, animated: true)
     }
     @objc func didTapOnVINSearchBtn(_ sender: UIButton) {
-        let vc = SearchByVIN()
+        let vc = SearchVC()
         navigationController?.pushViewController(vc, animated: true)
     }
     

@@ -30,6 +30,11 @@ class PaymentDetailCell: UICollectionViewCell {
     }()
     
     
+    private var shippingView: PreviewKeyValueView!
+    private var itemsView: PreviewKeyValueView!
+    private var priceView: PreviewKeyValueView!
+    
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
@@ -63,43 +68,52 @@ class PaymentDetailCell: UICollectionViewCell {
         containerView.setGradientBorder(width: 2.0, colors: [UIColor.hexStringToUIColor(hex: "#6082E0"), UIColor.hexStringToUIColor(hex: "#49B7B1")])
         
         
-        let statusView = PreviewKeyValueView(heading: "Items(2)", value: "AED 300.00")
-        containerView.addSubview(statusView)
-        statusView.snp.makeConstraints{ make in
+        itemsView = PreviewKeyValueView(heading: "Items(2)", value: "0.00")
+        containerView.addSubview(itemsView)
+        itemsView.snp.makeConstraints{ make in
             make.leading.top.equalTo(containerView).offset(16)
             make.trailing.equalTo(containerView.snp.trailing).inset(16)
         }
         
-        let itemsView = PreviewKeyValueView(heading: "Shipping", value: "0.00")
-        containerView.addSubview(itemsView)
-        itemsView.snp.makeConstraints{ make in
-            make.leading.equalTo(statusView)
+        shippingView = PreviewKeyValueView(heading: "Shipping", value: "0.00")
+        containerView.addSubview(shippingView)
+        
+        
+        shippingView.snp.makeConstraints{ make in
+            make.leading.equalTo(itemsView)
             make.trailing.equalTo(containerView.snp.trailing).inset(16)
-            make.top.equalTo(statusView.snp.bottom)
+            make.top.equalTo(itemsView.snp.bottom)
         }
         
         if !dottedView.isDescendant(of: containerView) {
             containerView.addSubview(dottedView)
         }
         dottedView.snp.remakeConstraints { make in
-            make.leading.equalTo(statusView)
+            make.leading.equalTo(itemsView)
             make.trailing.equalTo(containerView.snp.trailing).offset(-16)
-            make.top.equalTo(itemsView.snp.bottom).offset(16)
+            make.top.equalTo(shippingView.snp.bottom).offset(16)
             make.height.equalTo(10)
         }
         dottedView.layoutIfNeeded()
         dottedView.makeDashedBorderLine(color: UIColor.hexStringToUIColor(hex: "#949494"), strokeLength: 7, gapLength: 5, width: 2, orientation: .horizontal)
         
-        
-        
-        let priceView = PreviewKeyValueView(heading: "Price", value: "AED 300.00")
+        priceView = PreviewKeyValueView(heading: "Price", value: "0.00")
         containerView.addSubview(priceView)
         priceView.snp.makeConstraints{ make in
-            make.leading.equalTo(statusView)
+            make.leading.equalTo(itemsView)
             make.trailing.equalTo(containerView.snp.trailing).inset(16)
             make.top.equalTo(dottedView.snp.bottom)
         }
         priceView.lblValue.font = UIFont(name: AppFontName.bold, size: 12)
         priceView.lblHeading.font = UIFont(name: AppFontName.bold, size: 12)
+    }
+    
+    var data: OrderDetailModel? {
+        didSet {
+            guard let item = data else { return }
+            itemsView.lblValue.text = "\(item.total_items!) Items purchased"
+            priceView.lblValue.text = "AED \(item.total!)"
+            shippingView.lblValue.text = "\(item.shiping!)"
+        }
     }
 }

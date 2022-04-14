@@ -73,7 +73,6 @@ class HomeVC: UIViewController {
                 if response.success ?? false {
                     DispatchQueue.main.async {
                         self.home_data = response
-                        print(self.home_data?.products?.count)
                         self.products = self.home_data?.products
                         self.categories = self.home_data?.categories
                         self.media = self.home_data?.media
@@ -126,11 +125,11 @@ extension HomeVC {
     }
     
     @objc func didTapOnCarSearchBtn(_ sender: UIButton) {
-        let vc = SearchByCarVC()
+        let vc = SearchVC()
         navigationController?.pushViewController(vc, animated: true)
     }
     @objc func didTapOnVINSearchBtn(_ sender: UIButton) {
-        let vc = SearchByVIN()
+        let vc = SearchVC()
         navigationController?.pushViewController(vc, animated: true)
     }
     

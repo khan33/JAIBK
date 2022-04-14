@@ -41,33 +41,61 @@ class BlogDetailVC: UIViewController {
     private (set) lazy var imgView: UIImageView = { [unowned self] in
         var imgView = UIImageView()
         imgView.clipsToBounds = true
-        imgView.contentMode = .scaleAspectFill
+        imgView.contentMode = .scaleAspectFit
         return imgView
     }()
     
     private (set) lazy var lblTitle: UILabel = { [unowned self] in
         var label = UILabel()
-        label.textColor =  UIColor.init(red: 34 / 255 , green: 50/255, blue: 99/255, alpha: 1)
-        label.font = .systemFont(ofSize: 16)
-        label.text = "Blog Title goes her"
+        label.textColor =  UIColor.hexStringToUIColor(hex: "#000000")
+        label.font = UIFont(name: AppFontName.bold, size: 20)
+        label.text = ""
+        label.numberOfLines = 0
         return label
     }()
     
     private (set) lazy var lblDesc: UILabel = { [unowned self] in
         var label = UILabel()
-        label.textColor =  UIColor.init(red: 34 / 255 , green: 50/255, blue: 99/255, alpha: 1)
-        label.font = .systemFont(ofSize: 16)
-        label.text = "Blog Title goes her"
+        label.textColor =  UIColor.hexStringToUIColor(hex: "#000000")
+        label.font = UIFont(name: AppFontName.book, size: 16)
+        label.text = ""
         label.numberOfLines = 0
         return label
     }()
+    private var id: String
     
+    init(id: String) {
+        self.id = id
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setupViews()
+        getBlogDetail()
     }
-    
+    private func getBlogDetail() {
+        ServiceManager.shared.sendRequest(request: BlogDetailRequest(id: id), model: BlogModel.self) { result in
+            switch result {
+            case .success(let response):
+                if response.success ?? false {
+                    DispatchQueue.main.async {
+                        self.lblTitle.text = response.data?[0].name
+                        self.lblDesc.attributedText  = response.data?[0].description?.htmlAttributedString()
+                        if let img = response.data?[0].image {
+                            self.imgView.sd_setImage(with: URL(string: Constant.baseURL + "images/categories/" + img), placeholderImage: UIImage(named: "item"))
+                        }
+                    }
+                }
+            case .failure(let error):
+                print(error)
+            }
+        }
+    }
 
 }
 extension BlogDetailVC {
@@ -110,10 +138,9 @@ extension BlogDetailVC {
             //make.top.equalTo(stackView.snp)
             make.height.equalTo(310)
         }
-            stackView.addArrangedSubview(lblTitle)
+        stackView.addArrangedSubview(lblTitle)
         imgView.image = UIImage(named: "vehicle")
         imgView.layer.cornerRadius = 12
-        lblDesc.text = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of "
 
         stackView.addArrangedSubview(lblDesc)
         

@@ -74,8 +74,12 @@ extension LeftMenuController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         //dismissAnimate()
-        if indexPath.row == 1 {
-            let vc = AddCarVC()
+        
+        if indexPath.row == 0 {
+            let vc = AddGarageVC()
+            self.navigationController?.pushViewController(vc, animated: true)
+        } else if indexPath.row == 1 {
+            let vc = GarageVC()
             self.navigationController?.pushViewController(vc, animated: true)
         } else if indexPath.row == 2 {
             let vc = GarageVC()
@@ -84,16 +88,22 @@ extension LeftMenuController: UITableViewDelegate, UITableViewDataSource {
             let vc = AddAddressVC()
             self.navigationController?.pushViewController(vc, animated: true)
         } else if indexPath.row == 4 {
-            let vc = PaymentMethodVC()
+            let vc = AddressListVC()
             self.navigationController?.pushViewController(vc, animated: true)
         } else if indexPath.row == 5 {
             let vc = FavouriteVC()
             self.navigationController?.pushViewController(vc, animated: true)
         } else if indexPath.row == 6 {
-            let vc = BlogVC()
+            let vc = LoginVC() 
             self.navigationController?.pushViewController(vc, animated: true)
         } else if indexPath.row == 7 {
+            let vc = SignupVC()
+            self.navigationController?.pushViewController(vc, animated: true)
+        } else if indexPath.row == 8 {
             let vc = OrdersVC()
+            self.navigationController?.pushViewController(vc, animated: true)
+        } else if indexPath.row == 9 {
+            let vc = FavouriteVC()
             self.navigationController?.pushViewController(vc, animated: true)
         }
         

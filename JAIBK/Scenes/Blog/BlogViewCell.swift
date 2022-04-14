@@ -98,4 +98,16 @@ class BlogViewCell: UICollectionViewCell {
         }
         
     }
+    
+    
+    var data : BlogData? {
+        didSet {
+            guard let item = data else { return }
+            lblName.text = item.name
+            lblDate.text = item.created_at
+            if let img = item.image {
+                imageView.sd_setImage(with: URL(string: Constant.baseURL + "images/categories/" + img), placeholderImage: UIImage(named: "item"))
+            }
+        }
+    }
 }

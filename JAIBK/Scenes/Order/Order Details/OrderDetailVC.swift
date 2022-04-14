@@ -26,6 +26,19 @@ class OrderDetailVC: UIViewController {
         collectionView.register(PaymentDetailCell.self, forCellWithReuseIdentifier: "PaymentDetailCell")
         return collectionView;
     }()
+    private var order_id: String
+    
+    init(order_id: String) {
+        self.order_id = order_id
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    
+    private var orderDetail: OrderDetailModel?
     override func viewDidLoad() {
         super.viewDidLoad()
         self.navigationController?.navigationBar.tintColor = UIColor.black
@@ -33,8 +46,24 @@ class OrderDetailVC: UIViewController {
         let backButton = UIBarButtonItem()
         backButton.title = "Back"
         navigationController?.navigationBar.topItem?.backBarButtonItem = backButton
-        
+        getOrderDetail()
         setupViews()
+    }
+    
+    private func getOrderDetail() {
+        ServiceManager.shared.sendRequest(request: OrderDetailRequest(order_id: order_id), model: OrderDetailModel.self) { result in
+            switch result {
+            case .success(let response):
+                if response.success ?? false {
+                    DispatchQueue.main.async {
+                        self.orderDetail = response
+                        self.collectionView.reloadData()
+                    }
+                }
+            case .failure(let error):
+                print(error)
+            }
+        }
     }
 
 }
@@ -64,14 +93,17 @@ extension OrderDetailVC: UICollectionViewDataSource, UICollectionViewDelegate, U
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        if indexPath.section == 1 {
+        if indexPath.section == 0 {
             let cell = collectionView.dequeueReusableCell(with: ProductViewCell.self, for: indexPath)
+            cell.data = orderDetail?.data?[indexPath.row]
             return cell
-        } else if indexPath.section == 2 {
+        } else if indexPath.section == 1 {
             let cell = collectionView.dequeueReusableCell(with: ShippingViewCell.self, for: indexPath)
+            cell.shipping = orderDetail?.shipping_data?[indexPath.row]
             return cell
-        }  else if indexPath.section == 3 {
+        }  else if indexPath.section == 2 {
             let cell = collectionView.dequeueReusableCell(with: PaymentDetailCell.self, for: indexPath)
+            cell.data = orderDetail
             return cell
         } else {
             let cell = collectionView.dequeueReusableCell(with: PaymentDetailCell.self, for: indexPath)
@@ -81,7 +113,12 @@ extension OrderDetailVC: UICollectionViewDataSource, UICollectionViewDelegate, U
     }
     
     func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: collectionView.frame.width - 20, height: 240)
+        
+        if indexPath.section == 0 {
+            return CGSize(width: collectionView.frame.width - 20, height: 140)
+
+        }
+        return CGSize(width: collectionView.frame.width - 20, height: 200)
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
@@ -89,5 +126,30 @@ extension OrderDetailVC: UICollectionViewDataSource, UICollectionViewDelegate, U
     }
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
+    }
+}
+class  OrderDetailRequest: RequestModel {
+    private var order_id: String
+    
+    init(order_id: String) {
+        self.order_id = order_id
+    }
+    
+    
+    override var path: String {
+        return Constant.ServiceConstant.ORDER_DETAIL
+    }
+    
+    override var parameters: [String : Any?] {
+        return [
+            "order_id" : order_id
+        ]
+    }
+    
+    override var headers: [String : String] {
+        return [
+            "Content-Type" : "application/json",
+            "session_id": "okbv2pGg4jldTp6WyV5osuNl76bkSW01BRi2Mgpc"
+        ]
     }
 }

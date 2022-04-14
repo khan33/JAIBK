@@ -27,8 +27,17 @@ class CarMaintanceVC: UIViewController {
         return collectionView;
     }()
     
+    
+    var carMaintanceData: [CarMaintanenceData]?
+    var carMaintanceDetail: [CarMaintanenceData]?
+    var products: [Products]?
+    var dataSource: GenericPickerDataSource<CarMaintanenceData>?
+    var mileageView: PickerFieldView!
+    private var mileageTxt: String = ""
+    private var mileageId: String = "0"
+    private var selectedMileageItem: Int = 0
+    
     private var parent_id: String
-   
     init(parent_id: String) {
         self.parent_id = parent_id
         super.init(nibName: nil, bundle: nil)
@@ -42,6 +51,47 @@ class CarMaintanceVC: UIViewController {
         super.viewDidLoad()
         configNav()
         setupViews()
+        getCarMaintance()
+    }
+    
+    
+    private func getCarMaintance() {
+        ServiceManager.shared.sendRequest(request: CarMaintanenceRequest(), model: CarMaintanenceModel.self) { result in
+            switch result {
+            case .success(let response):
+                if response.success ?? false {
+                    DispatchQueue.main.async {
+                        self.carMaintanceData = response.data
+                        self.mileageView.txtField.isUserInteractionEnabled = true
+                        if self.carMaintanceData?.count ?? 0 > 0 {
+                            self.mileageView.setData(text: self.carMaintanceData?[0].mileage)
+                            self.getCarMaintanceDetails(id: self.carMaintanceData?[0].id ?? "0")
+                        }
+                    }
+                }
+            case .failure(let error):
+                print(error)
+            }
+        }
+    }
+    private func getCarMaintanceDetails(id: String) {
+        ServiceManager.shared.sendRequest(request: CarMaintanenceDetailRequest(id: id), model: CarMaintanenceModel.self) { result in
+            switch result {
+            case .success(let response):
+                if response.success ?? false {
+                    DispatchQueue.main.async {
+                        self.carMaintanceDetail = response.data
+                        self.products = response.products
+                        self.collectionView.reloadData()
+                    }
+                }
+            case .failure(let error):
+                print(error)
+            }
+        }
+    }
+    private func updateDescription(_ data: CarMaintanenceData?) {
+
     }
 }
 extension CarMaintanceVC {
@@ -61,12 +111,27 @@ extension CarMaintanceVC {
     
     fileprivate func setupViews() {
         edgesForExtendedLayout = []
-        let vehicleMilangeView = PickerFieldView(title: "Select your vehicle mileage", placeholder: "500 KM", icon: "down") {
-            
+        selectedMileageItem = carMaintanceData?.firstIndex(where: {$0.mileage == mileageTxt}) ?? 0
+
+        mileageView = PickerFieldView(title: "Select your vehicle mileage", placeholder: "500 KM", icon: "down") {
+            self.dataSource = GenericPickerDataSource<CarMaintanenceData>(
+                withItems: self.carMaintanceData ?? [],
+                        withRowTitle: { (data) -> String in
+                            return data.mileage ?? ""
+                        }, row: self.selectedMileageItem,  didSelect: { (data) in
+                            self.mileageView?.txtField.text = data.mileage
+
+                            self.mileageTxt = data.mileage ?? ""
+                            self.selectedMileageItem = self.carMaintanceData?.firstIndex(where: {$0.mileage == self.mileageTxt}) ?? 0
+                            self.getCarMaintanceDetails(id: data.id ?? "0")
+                        })
+            self.mileageView?.txtField.setupPickerField(withDataSource: self.dataSource!)
         }
-        vehicleMilangeView.lblStar.isHidden = true
-        view.addSubview(vehicleMilangeView)
-        vehicleMilangeView.snp.makeConstraints{ (make) -> Void in
+        mileageView.setData(text: mileageTxt)
+        mileageView.lblStar.isHidden = true
+        mileageView.txtField.isUserInteractionEnabled = false
+        view.addSubview(mileageView)
+        mileageView.snp.makeConstraints{ (make) -> Void in
             make.height.equalTo(90)
             make.top.equalTo(self.view.snp.top).offset(24)
             make.leading.trailing.equalTo(view).inset(16)
@@ -77,7 +142,7 @@ extension CarMaintanceVC {
             view.addSubview(collectionView)
         }
         collectionView.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(vehicleMilangeView.snp.bottom).offset(24)
+            make.top.equalTo(mileageView.snp.bottom).offset(24)
             make.leading.equalTo(self.view)
             make.trailing.equalTo(self.view)
             make.bottom.equalTo(self.view)
@@ -92,7 +157,7 @@ extension CarMaintanceVC: UICollectionViewDataSource, UICollectionViewDelegate, 
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if section == 2 {
-            return 8
+            return products?.count ?? 0
         }
         return 1
     }
@@ -100,6 +165,8 @@ extension CarMaintanceVC: UICollectionViewDataSource, UICollectionViewDelegate, 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if indexPath.section == 0 {
             let cell = collectionView.dequeueReusableCell(with: CategoryDescriptionCell.self, for: indexPath)
+            cell.lblHeading.attributedText = self.carMaintanceDetail?[indexPath.row].description?.htmlAttributedString()
+            cell.lblDesc.attributedText = self.carMaintanceDetail?[indexPath.row].sub_description?.htmlAttributedString()
             return cell
         } else if indexPath.section == 1 {
             let cell = collectionView.dequeueReusableCell(with: ViewAllCell.self, for: indexPath)
@@ -107,6 +174,7 @@ extension CarMaintanceVC: UICollectionViewDataSource, UICollectionViewDelegate, 
             return cell
         } else {
             let cell = collectionView.dequeueReusableCell(with: ProductCell.self, for: indexPath)
+            cell.product = self.products?[indexPath.row]
             return cell
         }
     }
@@ -122,6 +190,37 @@ extension CarMaintanceVC: UICollectionViewDataSource, UICollectionViewDelegate, 
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
         return UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+    }
+    
+}
+class CarMaintanenceRequest : RequestModel {
+    
+    override var path: String {
+        return Constant.ServiceConstant.CAR_MAINTANCE
+    }
+    override var headers: [String : String] {
+        return [
+            "Content-Type" : "application/json",
+            "language_id": "1"
+        ]
+    }
+    
+}
+
+class CarMaintanenceDetailRequest : RequestModel {
+    private var id: String
+    init(id: String) {
+        self.id = id
+        
+    }
+    override var path: String {
+        return Constant.ServiceConstant.CAR_MAINTANCE_DETAIL + "/" + id
+    }
+    override var headers: [String : String] {
+        return [
+            "Content-Type" : "application/json",
+            "language_id": "1"
+        ]
     }
     
 }

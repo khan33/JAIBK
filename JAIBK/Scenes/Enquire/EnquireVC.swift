@@ -2,66 +2,53 @@
 //  EnquireVC.swift
 //  JAIBK
 //
-//  Created by Atta khan on 22/03/2022.
+//  Created by Atta khan on 06/04/2022.
 //
 
 import UIKit
 
 class EnquireVC: UIViewController {
-    
-    private (set) lazy var containerView: UIView = { [unowned self] in
-        let view = UIView()
-        view.clipsToBounds = true
-        view.backgroundColor = .white
-        return view
+    private (set) lazy var collectionView:UICollectionView = { [unowned self] in
+        let flow = UICollectionViewFlowLayout()
+        flow.scrollDirection = .vertical
+        flow.estimatedItemSize = CGSize.zero
+        flow.minimumInteritemSpacing = 0
+        flow.minimumLineSpacing = 0
+        let collectionView = UICollectionView(frame: CGRect.zero, collectionViewLayout: flow)
+        collectionView.delegate = self
+        collectionView.dataSource = self
+        collectionView.isScrollEnabled = true
+        collectionView.showsVerticalScrollIndicator = false
+        collectionView.showsHorizontalScrollIndicator  = false
+        collectionView.backgroundColor = UIColor.systemGroupedBackground
+        collectionView.register(EnquireCell.self, forCellWithReuseIdentifier: "EnquireCell")
+        return collectionView;
     }()
-    
-    private (set) lazy var scrollView: UIScrollView = { [unowned self] in
-        let view = UIScrollView()
-        view.showsVerticalScrollIndicator = true
-        view.clipsToBounds = true
-        return view
-    }()
-    
-    private (set) lazy var contentView: UIView = { [unowned self] in
-        let view = UIView()
-        view.clipsToBounds = true
-        return view
-    }()
-    
-    private (set) lazy var stackView: UIStackView = { [unowned self] in
-        let view = UIStackView()
-        view.distribution = .equalSpacing
-        view.alignment = .fill
-        view.axis = .vertical
-        view.spacing = 16
-        view.clipsToBounds = true
-        return view
-    }()
+    private var enquireData: [EnquireData]?
     override func viewDidLoad() {
         super.viewDidLoad()
-        configNav()
-        setupViews()
-    }
-    
-    func configNav() {
         navigationController?.navigationBar.titleTextAttributes = [
             .foregroundColor: UIColor.black,
             .font: UIFont(name: "GothamNarrow-Medium", size: 20)!
         ]
-        navigationItem.title = "Enquire"
-        
+        navigationItem.title = "Enquiries"
+    
         let homeImage  = UIImage(named: "home")?.withRenderingMode(.alwaysOriginal)
         let menuImage = UIImage(named: "menuIcon")?.withRenderingMode(.alwaysOriginal)
 
+        
         let homeButton = UIBarButtonItem(image: homeImage,  style: .plain, target: self, action: #selector(didTapHomeButton(sender:)))
         navigationItem.rightBarButtonItems = [homeButton]
 
         let menuButton = UIBarButtonItem(image: menuImage,  style: .plain, target: self, action: #selector(didTapMenuButton(sender:)))
         navigationItem.leftBarButtonItem = menuButton
+        
+        
+        
+        
+        loadUIView()
+        getEnquires()
     }
-    
-    
     @objc func didTapHomeButton(sender: AnyObject){
         
     }
@@ -73,80 +60,72 @@ class EnquireVC: UIViewController {
         presentAnimate(vc)
         
     }
-
+    
+    private func getEnquires() {
+        ServiceManager.shared.sendRequest(request: EnquireRequestModel.EnquireRequest(), model: EnquireModel.self) { result in
+            switch result {
+            case .success(let response):
+                if response.success ?? false {
+                    DispatchQueue.main.async {
+                        self.enquireData = response.data
+                        self.collectionView.reloadData()
+                    }
+                }
+            case .failure(let error):
+                print(error)
+            }
+        }
+    }
+    
 }
+
 extension EnquireVC {
-    fileprivate func setupViews() {
+    private func loadUIView()  {
         edgesForExtendedLayout = []
-        if !containerView.isDescendant(of: self.view) {
-            self.view.addSubview(containerView)
-        }
-        containerView.snp.remakeConstraints { make in
-            make.edges.equalToSuperview()
-            make.width.equalToSuperview()
-            make.height.equalToSuperview()
-        }
-        if !scrollView.isDescendant(of: containerView) {
-            containerView.addSubview(scrollView)
-        }
-        scrollView.snp.makeConstraints { (make) -> Void in
-            make.edges.equalToSuperview()
-        }
-        
-        if !contentView.isDescendant(of: scrollView) {
-            scrollView.addSubview(contentView)
-        }
-        contentView.snp.makeConstraints{ (make) -> Void in
-            make.top.bottom.leading.trailing.equalToSuperview()
-            make.width.equalToSuperview()
-        }
-        if !stackView.isDescendant(of: contentView) {
-            contentView.addSubview(stackView)
-        }
-        stackView.snp.makeConstraints{ make -> Void in
-            make.top.equalToSuperview().offset(20)
-            make.leading.trailing.equalToSuperview().inset(8)
-            make.bottom.equalToSuperview()
-        }
-        let productInfoView = EnquireTextFieldView(title: "Product Info", placeholder: "Product Id") { text in
-        }
-        stackView.addArrangedSubview(productInfoView)
         
         
-        let quantity = EnquireTextFieldView(title: "Quantity", placeholder: "") { text in
+        if !collectionView.isDescendant(of: view) {
+            view.addSubview(collectionView)
         }
-        stackView.addArrangedSubview(quantity)
-        
-        
-        let firstNameView = EnquireTextFieldView(title: "First Name", placeholder: "") { text in
+        collectionView.snp.makeConstraints { (make) -> Void in
+            make.top.equalTo(self.view).offset(8)
+            make.bottom.equalTo(self.view)
+            make.leading.equalTo(self.view)
+            make.trailing.equalTo(self.view)
         }
-        stackView.addArrangedSubview(firstNameView)
+    }
+}
+extension EnquireVC: UICollectionViewDelegate, UICollectionViewDataSource,  UICollectionViewDelegateFlowLayout {
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        return 1
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return enquireData?.count ?? 0
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(with: EnquireCell.self, for: indexPath)
+        cell.enquire = enquireData?[indexPath.row]
+        return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let width = collectionView.frame.width
+        return CGSize(width: width, height: 200)
+    }
+    
+    
+    
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         
-        
-        let lastNameView = EnquireTextFieldView(title: "Last Name", placeholder: "") { text in
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        if let id = enquireData?[indexPath.row].product_id {
+            let vc = EnquireDetailVC(product_id: id)
+            self.navigationController?.pushViewController(vc, animated: true)
         }
-        stackView.addArrangedSubview(lastNameView)
-        
-        let emailView = EnquireTextFieldView(title: "Email", placeholder: "") { text in
-        }
-        stackView.addArrangedSubview(emailView)
-        let phoneNoView = EnquireTextFieldView(title: "Phone Number", placeholder: "") { text in
-        }
-        stackView.addArrangedSubview(phoneNoView)
-        
-        let enterMessageView = EnquireTextFieldView(title: "Enter your Message", placeholder: "") { text in
-        }
-        enterMessageView.txtField.snp.updateConstraints { (make) in
-            make.height.equalTo(100)
-        }
-        
-        stackView.addArrangedSubview(enterMessageView)
-        
-        let btnView = CenterButtonView.init(title: "Submit") { [weak self] (clicked) in
-            guard let self = self else {return}
-        }
-        stackView.addArrangedSubview(btnView)
         
     }
 }
-

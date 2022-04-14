@@ -54,21 +54,71 @@ class LoginVC: UIViewController {
         label.textAlignment = .center
         return label
     }()
+    private (set) lazy var accountLbl: UILabel = { [unowned self] in
+        var label = UILabel()
+        label.textColor =  UIColor.hexStringToUIColor(hex: "#9098B1")
+        label.font = UIFont(name: AppFontName.book, size: 16)
+        label.text = "Already have an account? Sign up here"
+        label.textAlignment = .center
+        return label
+    }()
+    
+    private (set) lazy var forgotPasswrdBtn: UIButton = { [unowned self] in
+        var btn = UIButton()
+        btn.translatesAutoresizingMaskIntoConstraints = false
+        btn.setTitle("Forgot Password", for: .normal)
+        btn.setTitleColor(UIColor.hexStringToUIColor(hex: "#9098B1"), for: .normal)
+        btn.backgroundColor = .clear
+        btn.addTarget(self, action: #selector(didTapOnForgotPasswrodBtn), for: .touchUpInside)
+        btn.contentHorizontalAlignment = .right
+        return btn
+    }()
     
     
+    
+    var passwordView: TextInputView!
+    var emailView: TextInputView!
    
-    
+    private var emailTxt: String = ""
+    private var passwordTxt: String = ""
     
    
     override func viewDidLoad() {
         super.viewDidLoad()
+        let str = accountLbl.text!
+        let attributedString = NSMutableAttributedString(string: str)
+        let range: NSRange = attributedString.mutableString.range(of: "Sign up here", options: .caseInsensitive)
+        attributedString.addAttribute(.font, value: UIFont(name: AppFontName.bold, size: 16), range: range)
+        attributedString.addAttribute(.foregroundColor, value: UIColor.hexStringToUIColor(hex: "#000000"), range: range)
+        accountLbl.attributedText = attributedString
+        accountLbl.isUserInteractionEnabled = true
+        let tapgesture = UITapGestureRecognizer(target: self, action: #selector(tappedOnLabel(_ :)))
+        tapgesture.numberOfTapsRequired = 1
+        tapgesture.numberOfTouchesRequired = 1
+        accountLbl.addGestureRecognizer(tapgesture)
         setupViews()
-        // Do any additional setup after loading the view.
     }
+    
+    @objc func tappedOnLabel(_ gesture: UITapGestureRecognizer) {
+        guard let _ = self.accountLbl.text else { return }
+        let vc = SignupVC()
+        self.navigationController?.pushViewController(vc, animated: true)
+
+    }
+    
+    @objc func didTapOnForgotPasswrodBtn(_ sender: UIButton) {
+        let vc = ForgotPasswordVC()
+        self.navigationController?.pushViewController(vc, animated: true)
+    }
+    
 }
 
 extension LoginVC {
     fileprivate func setupViews() {
+        
+        emailTxt = "attam150@gmail.com"
+        passwordTxt = "admin123"
+        
         if !containerView.isDescendant(of: self.view) {
             self.view.addSubview(containerView)
         }
@@ -106,22 +156,88 @@ extension LoginVC {
         }
         stackView.addArrangedSubview(lblTitle)
         
-        let emailView = TextInputView(placeholder: "Your email", isPasswordEnable: false, icon: "email") { [weak self] (enteredText) in
+        emailView = TextInputView(placeholder: "Your email", isPasswordEnable: false, icon: "email") { [weak self] (enteredText) in
             guard let self = self else {return}
+            self.emailTxt = enteredText
         }
+        emailView.setData(text: emailTxt)
         stackView.addArrangedSubview(emailView)
         
         
-        let passwordView = TextInputView(placeholder: "Password", isPasswordEnable: true, icon: "password") { [weak self] (enteredText) in
+        passwordView = TextInputView(placeholder: "Password", isPasswordEnable: true, icon: "password") { [weak self] (enteredText) in
             guard let self = self else {return}
+            self.passwordTxt = enteredText
         }
+        passwordView.setData(text: passwordTxt)
         stackView.addArrangedSubview(passwordView)
+        
+        stackView.addArrangedSubview(forgotPasswrdBtn)
+        
+        
         let btnView = CenterButtonView.init(title: "Login") { [weak self] (clicked) in
             guard let self = self else {return}
+            if self.emailTxt == "" {
+                self.showAlert(withTitle: "Alert", message: "Enter your email.")
+                return
+            }
+            
+            if self.passwordTxt == "" {
+                self.showAlert(withTitle: "Alert", message: "Enter your password.")
+                return
+            }
+            
+            ServiceManager.shared.sendRequest(request: LoginRequest(email: self.emailTxt, password: self.passwordTxt, fcm_token: "fjkklasfjlsaf"), model: UserModel.self) { result in
+                switch result {
+                case .success(let response):
+                    DispatchQueue.main.async {
+                        if response.success ?? false {
+                            print(response.data)
+                        } else {
+                            self.showAlert(withTitle: "Alert", message: response.message ?? "")
+                        }
+                    }
+                case .failure(let error):
+                    print(error)
+                }
+            }
+            
         }
         stackView.addArrangedSubview(btnView)
         
-        
-        
+        stackView.addArrangedSubview(accountLbl)
     }
+    
+}
+class LoginRequest : RequestModel {
+    private var email: String
+    private var password: String
+    private var fcm_token: String
+   
+    init(email: String, password: String, fcm_token: String) {
+        self.email = email
+        self.password = password
+        self.fcm_token = fcm_token
+    }
+    
+    override var path: String {
+        return Constant.ServiceConstant.LOGIN
+    }
+    override var body: [String : Any?] {
+        return [
+            "email": email,
+            "password": password,
+            "fcm_token" : fcm_token
+        ]
+    }
+    
+    override var headers: [String : String] {
+        return [
+            "Content-Type" : "Application/json",
+        ]
+    }
+    
+    override var method: RequestHTTPMethod {
+        return .post
+    }
+    
 }

@@ -38,6 +38,7 @@ class EnquireTextFieldView: UIView {
         view.layer.borderColor = UIColor.hexStringToUIColor(hex: "#DBDBDB").cgColor
         view.layer.masksToBounds = true
         view.addTarget(self, action: #selector(textFieldDidChange(textField:)), for: .editingChanged)
+        view.font = UIFont(name: AppFontName.bold, size: 14)
         return view
     }()
     

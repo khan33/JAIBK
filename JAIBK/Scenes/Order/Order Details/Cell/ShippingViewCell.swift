@@ -47,6 +47,10 @@ class ShippingViewCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    private var statusView: PreviewKeyValueView!
+    private var shippingStatusView: PreviewKeyValueView!
+    private var addressView: PreviewKeyValueView!
+    
     private func loadUIView()  {
         if !containerView.isDescendant(of: contentView) {
             contentView.addSubview(containerView)
@@ -74,7 +78,7 @@ class ShippingViewCell: UICollectionViewCell {
         }
         
         
-        let statusView = PreviewKeyValueView(heading: "Date Shipping", value: "September 16, 2021")
+        statusView = PreviewKeyValueView(heading: "Date Shipping", value: "September 16, 2021")
         shippingView.addSubview(statusView)
         
         statusView.snp.makeConstraints { make in
@@ -86,7 +90,7 @@ class ShippingViewCell: UICollectionViewCell {
         statusView.lblValue.textColor = .white
         
         
-        let shippingStatusView = PreviewKeyValueView(heading: "Shipping", value: "POS Reggular")
+        shippingStatusView = PreviewKeyValueView(heading: "Shipping", value: "")
         shippingView.addSubview(shippingStatusView)
         shippingStatusView.snp.makeConstraints{ make in
             make.leading.trailing.equalTo(shippingView).inset(16)
@@ -96,7 +100,7 @@ class ShippingViewCell: UICollectionViewCell {
         shippingStatusView.lblHeading.textColor = .white
         shippingStatusView.lblValue.textColor = .white
         
-        let addressView = PreviewKeyValueView(heading: "Address", value: "2727 New Owerri, Owerri, Imo State 78410")
+        addressView = PreviewKeyValueView(heading: "Address", value: "")
         shippingView.addSubview(addressView)
         addressView.snp.makeConstraints{ make in
             make.leading.trailing.equalTo(shippingView).inset(16)
@@ -105,5 +109,15 @@ class ShippingViewCell: UICollectionViewCell {
         addressView.containerView.backgroundColor = .clear
         addressView.lblHeading.textColor = .white
         addressView.lblValue.textColor = .white
+    }
+    
+    
+    var shipping: ShippingData? {
+        didSet {
+            guard let data = shipping else { return }
+            statusView.lblValue.text = data.shiping
+            addressView.lblValue.text = data.address
+            shippingStatusView.lblValue.text = data.date_shiping
+        }
     }
 }

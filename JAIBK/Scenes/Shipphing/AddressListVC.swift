@@ -1,5 +1,5 @@
 //
-//  GarageVC.swift
+//  PaymentMethodVC.swift
 //  JAIBK
 //
 //  Created by Atta khan on 23/03/2022.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-class GarageVC: UIViewController {
+class AddressListVC: UIViewController {
     private (set) lazy var collectionView:UICollectionView = { [unowned self] in
         let flow = UICollectionViewFlowLayout()
         flow.scrollDirection = .vertical
@@ -20,10 +20,9 @@ class GarageVC: UIViewController {
         collectionView.isScrollEnabled = true
         collectionView.showsVerticalScrollIndicator = false
         collectionView.showsHorizontalScrollIndicator  = false
-        collectionView.register(GarageViewCell.self, forCellWithReuseIdentifier: "GarageViewCell")
+        collectionView.register(PaymentViewCell.self, forCellWithReuseIdentifier: "PaymentViewCell")
         return collectionView
     }()
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         configNav()
@@ -34,14 +33,50 @@ class GarageVC: UIViewController {
             .foregroundColor: UIColor.black,
             .font: UIFont(name: "GothamNarrow-Medium", size: 20)!
         ]
-        navigationItem.title = "Garage"
+        navigationItem.title = "Payment Methods"
         self.navigationController?.navigationBar.tintColor = UIColor.black
         let backButton = UIBarButtonItem()
         backButton.title = "Back"
         navigationController?.navigationBar.topItem?.backBarButtonItem = backButton
     }
+
+    private func getAddress() {
+        ServiceManager.shared.sendRequest(request: AddressRequestModel.AddressRequest(), model: CityModel.self) { result in
+            switch result {
+            case .success(let response):
+                if response.success ?? false {
+                    DispatchQueue.main.async {
+                        
+                    }
+                }
+            case .failure(let error):
+                print(error)
+            }
+        }
+    }
+    
+    private func editAddress() {
+        
+    }
+    
+    
+    private func deleteAddress(id: String) {
+        ServiceManager.shared.sendRequest(request: AddressRequestModel.DeleteAddressRequest(id: id), model: CityModel.self) { result in
+            switch result {
+            case .success(let response):
+                if response.success ?? false {
+                    DispatchQueue.main.async {
+                        
+                    }
+                }
+            case .failure(let error):
+                print(error)
+            }
+        }
+    }
+    
 }
-extension GarageVC {
+extension AddressListVC {
     fileprivate func setupViews() {
         edgesForExtendedLayout = []
         
@@ -58,7 +93,7 @@ extension GarageVC {
     
     
 }
-extension GarageVC: UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
+extension AddressListVC: UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
     
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -66,7 +101,7 @@ extension GarageVC: UICollectionViewDataSource, UICollectionViewDelegate, UIColl
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(with: GarageViewCell.self, for: indexPath)
+        let cell = collectionView.dequeueReusableCell(with: PaymentViewCell.self, for: indexPath)
         return cell
     }
     

@@ -1,5 +1,5 @@
 //
-//  SearchByCarVC.swift
+//  SearchVC.swift
 //  JAIBK
 //
 //  Created by Atta khan on 22/03/2022.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-class SearchByCarVC: UIViewController {
+class SearchVC: UIViewController {
     
     private (set) lazy var containerView: UIView = { [unowned self] in
         let view = UIView()
@@ -170,14 +170,33 @@ class SearchByCarVC: UIViewController {
         }
     }
     @objc func didTapOnCarSearchBtn(_ sender: UIButton) {
+        VINNumberView.isHidden = true
+        modelView.isHidden = false
+        yearView.isHidden = false
+        makeView.isHidden = false
+        engineView.isHidden = false
         
-        searchViewByCar()
     }
     @objc func didTapOnVINSearchBtn(_ sender: UIButton) {
-        searchViewByVIN()
+        VINNumberView.isHidden = false
+        modelView.isHidden = true
+        yearView.isHidden = true
+        makeView.isHidden = true
+        engineView.isHidden = true
+        
+    }
+    
+    private func resetStack() {
+        stackView.arrangedSubviews.forEach { (view) in
+            stackView.removeArrangedSubview(view)
+        }
+        
+        stackView.subviews.forEach { (view) in
+            view.removeFromSuperview()
+        }
     }
 }
-extension SearchByCarVC {
+extension SearchVC {
    func configNav() {
        self.navigationController?.navigationBar.tintColor = UIColor.black
        navigationItem.title = "Search"
@@ -302,6 +321,18 @@ extension SearchByCarVC {
         }
         
         
+        searchTxtField()
+        searchViewByVIN()
+        searchViewByCar()
+        
+        let btnView = CenterButtonView.init(title: "Search") { [weak self] (clicked) in
+            guard let self = self else {return}
+        }
+        stackView.addArrangedSubview(btnView)
+
+    }
+    
+    private func searchTxtField() {
         stackView.addArrangedSubview(txtField)
         txtField.snp.makeConstraints { (make) -> Void in
             make.height.equalTo(55)
@@ -312,9 +343,6 @@ extension SearchByCarVC {
         stackSerachView.snp.makeConstraints { (make) -> Void in
             make.height.equalTo(55)
         }
-        
-        
-        
         partsView = CheckboxView(heading: "Parts", image: "unchecked") { select in
             self.checkedPartCheckbox = select
             if self.checkedPartCheckbox == true {
@@ -330,23 +358,16 @@ extension SearchByCarVC {
                 self.partsView.btnIcon.isSelected = false
             }
         }
-        
-        
         stackPartView.snp.makeConstraints { (make) -> Void in
             make.height.equalTo(55)
         }
         stackView.addArrangedSubview(stackPartView)
         stackView.addArrangedSubview(lblChosing)
         
-        searchViewByCar()
-        
-        
-        let btnView = CenterButtonView.init(title: "Search") { [weak self] (clicked) in
-            guard let self = self else {return}
-        }
-        stackView.addArrangedSubview(btnView)
-
     }
+    
+    
+    
 }
 class DropdownOption : RequestModel {
     override var path: String {

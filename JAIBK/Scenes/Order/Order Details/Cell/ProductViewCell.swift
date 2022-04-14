@@ -16,7 +16,7 @@ class ProductViewCell: UICollectionViewCell {
     }()
     private (set) lazy var imgCoverView: UIView = { [unowned self] in
         let view = UIView()
-        view.backgroundColor = .gray
+        view.backgroundColor = UIColor.hexStringToUIColor(hex: "#EFEFEF")
         view.clipsToBounds = true
         return view
     }()
@@ -57,7 +57,15 @@ class ProductViewCell: UICollectionViewCell {
         lbl.textColor = UIColor.hexStringToUIColor(hex: "#49B7B1")
         return lbl
     }()
-
+    private (set) lazy var lblProduct: UILabel = {[unowned self] in
+        let lbl = UILabel()
+        lbl.translatesAutoresizingMaskIntoConstraints = false
+        lbl.numberOfLines = 1
+        lbl.text = "Product"
+        lbl.font = UIFont(name: AppFontName.bold, size: 16)
+        lbl.textColor = UIColor.hexStringToUIColor(hex: "#000000")
+        return lbl
+    }()
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
@@ -74,11 +82,21 @@ class ProductViewCell: UICollectionViewCell {
     }
     
     private func loadUIView()  {
+        
+        if !lblProduct.isDescendant(of: contentView) {
+            contentView.addSubview(lblProduct)
+        }
+        lblProduct.snp.makeConstraints { make in
+            make.top.leading.trailing.equalTo(contentView).offset(8)
+        }
+        
+        
         if !containerView.isDescendant(of: contentView) {
             contentView.addSubview(containerView)
         }
         containerView.snp.makeConstraints { make in
-            make.leading.trailing.top.bottom.equalTo(contentView).inset(8)
+            make.top.equalTo(lblProduct.snp.bottom).offset(8)
+            make.leading.trailing.bottom.equalTo(contentView).inset(8)
         }
         containerView.layoutIfNeeded()
         containerView.setGradientBorder(width: 2.0, colors: [UIColor.hexStringToUIColor(hex: "#6082E0"), UIColor.hexStringToUIColor(hex: "#49B7B1")])
@@ -125,5 +143,18 @@ class ProductViewCell: UICollectionViewCell {
             make.top.equalTo(lblBrandName.snp.bottom).offset(8)
         }
         
+    }
+    
+    
+    var data: OrderDetailData? {
+        didSet {
+            guard let data = data else { return }
+            lblProductName.text = data.name
+            lblPrice.text = data.price
+            lblBrandName.text = data.brand_name
+            if let img = data.image {
+                productImageView.sd_setImage(with: URL(string: Constant.baseURL + "images/products/" + img), placeholderImage: UIImage(named: "item"))
+            }
+        }
     }
 }
