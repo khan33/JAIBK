@@ -62,8 +62,8 @@ class BlogDetailVC: UIViewController {
         label.numberOfLines = 0
         return label
     }()
-    private var id: String
     
+    private var id: String
     init(id: String) {
         self.id = id
         super.init(nibName: nil, bundle: nil)

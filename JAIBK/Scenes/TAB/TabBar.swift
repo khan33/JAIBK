@@ -11,10 +11,15 @@ class TabBar: UITabBarController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = .white
         self.tabBar.tintColor = .label
-        self.tabBar.isTranslucent = false
-        UITabBar.appearance().barTintColor = .systemBackground
+       // self.tabBar.isTranslucent = false
+        //UITabBar.appearance().barTintColor = UIColor.hexStringToUIColor(hex: "#DBDBDB")
+        tabBar.layer.borderWidth = 0.3
+        tabBar.layer.borderColor = UIColor.hexStringToUIColor(hex: "#DBDBDB").cgColor
+        tabBar.clipsToBounds = true
+
+        
         setupVCs()
     }
     

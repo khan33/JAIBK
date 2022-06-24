@@ -54,11 +54,8 @@ class EnquireVC: UIViewController {
     }
     
     @objc func didTapMenuButton(sender: AnyObject){
-        
         let vc = LeftMenuController()
-        vc.modalPresentationStyle = .fullScreen
-        presentAnimate(vc)
-        
+        self.navigationController?.pushViewController(vc, animated: false)
     }
     
     private func getEnquires() {

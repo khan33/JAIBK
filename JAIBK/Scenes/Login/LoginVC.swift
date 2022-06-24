@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SVProgressHUD
 
 class LoginVC: UIViewController {
     private (set) lazy var containerView: UIView = { [unowned self] in
@@ -116,7 +117,7 @@ class LoginVC: UIViewController {
 extension LoginVC {
     fileprivate func setupViews() {
         
-        emailTxt = "attam150@gmail.com"
+        emailTxt = "abcd@gmail.com"
         passwordTxt = "admin123"
         
         if !containerView.isDescendant(of: self.view) {
@@ -185,13 +186,20 @@ extension LoginVC {
                 self.showAlert(withTitle: "Alert", message: "Enter your password.")
                 return
             }
-            
+            SVProgressHUD.show()
             ServiceManager.shared.sendRequest(request: LoginRequest(email: self.emailTxt, password: self.passwordTxt, fcm_token: "fjkklasfjlsaf"), model: UserModel.self) { result in
+                SVProgressHUD.dismiss()
                 switch result {
                 case .success(let response):
                     DispatchQueue.main.async {
                         if response.success ?? false {
-                            print(response.data)
+                            if let data = response.data {
+                                AppUtils.shared.saveUser(user: data) //Save User
+                                AppUtils.shared.saveToken(token: data.token ?? "") //Save Token
+                                //self.navigationController?.popViewController(animated: true)
+                                
+                            }
+                            
                         } else {
                             self.showAlert(withTitle: "Alert", message: response.message ?? "")
                         }

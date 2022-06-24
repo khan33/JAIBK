@@ -55,11 +55,8 @@ class ShopVC: UIViewController {
     }
     
     @objc func didTapMenuButton(sender: AnyObject){
-        
         let vc = LeftMenuController()
-        vc.modalPresentationStyle = .fullScreen
-        presentAnimate(vc)
-        
+        self.navigationController?.pushViewController(vc, animated: false)
     }
     private func getCategories() {
         ServiceManager.shared.sendRequest(request: CategoryRequest(), model: CategoryModel.self) { result in

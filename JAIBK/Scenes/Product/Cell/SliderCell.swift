@@ -24,6 +24,11 @@ class SliderCell: UICollectionViewCell {
         view.image = UIImage(named: "image 29")
         return view
     }()
+    lazy var width: NSLayoutConstraint = {
+        let width = contentView.widthAnchor.constraint(equalToConstant: bounds.size.width)
+        width.isActive = true
+        return width
+    }()
     
     
     override func awakeFromNib() {
@@ -39,14 +44,18 @@ class SliderCell: UICollectionViewCell {
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+    override func systemLayoutSizeFitting(_ targetSize: CGSize, withHorizontalFittingPriority horizontalFittingPriority: UILayoutPriority, verticalFittingPriority: UILayoutPriority) -> CGSize {
+        width.constant = bounds.size.width
+        return contentView.systemLayoutSizeFitting(CGSize(width: targetSize.width, height: 1))
+    }
     private func loadUIView()  {
         if !containerView.isDescendant(of: contentView) {
             contentView.addSubview(containerView)
         }
-        containerView.snp.remakeConstraints { make in
-            make.edges.equalToSuperview()
-            make.width.equalToSuperview()
+        containerView.snp.makeConstraints { make in
+            //make.edges.equalToSuperview()
+            make.leading.trailing.equalToSuperview().inset(16)
+//            make.width.equalToSuperview().inset(8)
             make.height.equalToSuperview()
         }
         
@@ -54,7 +63,7 @@ class SliderCell: UICollectionViewCell {
             containerView.addSubview(productImageView)
         }
         productImageView.snp.makeConstraints { make in
-            make.top.leading.trailing.bottom.equalTo(containerView)
+            make.edges.equalToSuperview()
         }
     }
     

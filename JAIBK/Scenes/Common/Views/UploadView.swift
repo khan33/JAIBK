@@ -30,7 +30,7 @@ class UploadView: UIView {
         view.layer.borderColor = UIColor.hexStringToUIColor(hex: "#DBDBDB").cgColor
         view.layer.masksToBounds = true
         view.isUserInteractionEnabled = false
-        
+        view.font = UIFont(name: AppFontName.bold, size: 11)
         return view
     }()
     

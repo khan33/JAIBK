@@ -54,6 +54,14 @@ extension ServiceManager {
                 completion(Result.success(result))
             }
             catch {
+                print("\n\n===========Error===========")
+                        print("Error Code: \(error._code)")
+                        print("Error Messsage: \(error.localizedDescription)")
+                        if let str = String(data: data!, encoding: String.Encoding.utf8){
+                            print("Server Error: " + str)
+                        }
+                        debugPrint(error as Any)
+                        print("===========================\n\n")
                 print(error.localizedDescription)
             }
         }.resume()

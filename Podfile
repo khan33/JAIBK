@@ -7,8 +7,9 @@ target 'JAIBK' do
 
   # Pods for JAIBK
 
-pod 'IQKeyboardManagerSwift'
-pod 'SnapKit'
-pod 'Cosmos', '~> 23.0'
-pod 'SDWebImage', '~> 5.0'
+  pod 'IQKeyboardManagerSwift'
+  pod 'SnapKit'
+  pod 'Cosmos', '~> 23.0'
+  pod 'SDWebImage', '~> 5.0'
+  pod 'SVProgressHUD'
 end

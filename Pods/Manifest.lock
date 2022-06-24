@@ -5,12 +5,14 @@ PODS:
     - SDWebImage/Core (= 5.12.2)
   - SDWebImage/Core (5.12.2)
   - SnapKit (5.0.1)
+  - SVProgressHUD (2.2.5)
 
 DEPENDENCIES:
   - Cosmos (~> 23.0)
   - IQKeyboardManagerSwift
   - SDWebImage (~> 5.0)
   - SnapKit
+  - SVProgressHUD
 
 SPEC REPOS:
   trunk:
@@ -18,13 +20,15 @@ SPEC REPOS:
     - IQKeyboardManagerSwift
     - SDWebImage
     - SnapKit
+    - SVProgressHUD
 
 SPEC CHECKSUMS:
   Cosmos: b5c6a9a637e28a061b54c8f8b1d8529d7d4db73f
   IQKeyboardManagerSwift: 6e839c575c4aa1078d58a596e41244e77abe918f
   SDWebImage: 240e5c12b592fb1268c1d03b8c90d90e8c2ffe82
   SnapKit: 97b92857e3df3a0c71833cce143274bf6ef8e5eb
+  SVProgressHUD: 1428aafac632c1f86f62aa4243ec12008d7a51d6
 
-PODFILE CHECKSUM: e7c4b1e35e6ba81d1d2eba67c255f6646a9b36a8
+PODFILE CHECKSUM: 6b2602f913ea662c8ed57c51af09b9ea1fb72b70
 
 COCOAPODS: 1.11.2

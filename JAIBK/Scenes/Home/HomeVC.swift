@@ -8,6 +8,7 @@
 import UIKit
 import SnapKit
 import IQKeyboardManagerSwift
+import SVProgressHUD
 
 class HomeVC: UIViewController {
     
@@ -23,7 +24,7 @@ class HomeVC: UIViewController {
         collectionView.isScrollEnabled = true
         collectionView.showsVerticalScrollIndicator = false
         collectionView.showsHorizontalScrollIndicator  = false
-        
+        collectionView.backgroundColor = UIColor.white
         collectionView.register(SearchButtonCell.self, forCellWithReuseIdentifier: "SearchButtonCell")
         collectionView.register(ProductSlider.self, forCellWithReuseIdentifier: "ProductSlider")
         collectionView.register(ProductCell.self, forCellWithReuseIdentifier: "ProductCell")
@@ -67,11 +68,14 @@ class HomeVC: UIViewController {
     }
     
     private func getHomeProducts() {
+        SVProgressHUD.show()
         ServiceManager.shared.sendRequest(request: HomeRequest(), model: HomeModel.self) { result in
+            SVProgressHUD.dismiss()
             switch result {
             case .success(let response):
                 if response.success ?? false {
                     DispatchQueue.main.async {
+                        //SVProgressHUD.dismiss()
                         self.home_data = response
                         self.products = self.home_data?.products
                         self.categories = self.home_data?.categories
@@ -82,6 +86,7 @@ class HomeVC: UIViewController {
                 }
             case .failure(let error):
                 print(error)
+                
             }
         }
     }
@@ -93,11 +98,8 @@ class HomeVC: UIViewController {
     }
     
     @objc func didTapMenuButton(sender: AnyObject){
-        
         let vc = LeftMenuController()
         self.navigationController?.pushViewController(vc, animated: false)
-        //presentAnimate(vc)
-        
     }
     
     @objc func didTapOnAllViewBtn(_ sender: UIButton) {
@@ -221,8 +223,10 @@ extension HomeVC: UICollectionViewDataSource, UICollectionViewDelegate, UICollec
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if indexPath.section == 3 {
-            let vc = ProductDetailVC()
-            self.navigationController?.pushViewController(vc, animated: true)
+            if let id = products?[indexPath.row].product_id {
+                let vc = ProductDetailVC(id: id)
+                self.navigationController?.pushViewController(vc, animated: true)
+            }
         }
     }
     

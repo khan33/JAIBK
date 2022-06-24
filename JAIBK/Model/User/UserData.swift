@@ -25,7 +25,6 @@ struct UserData : Codable {
 	let verificationcode : Int?
 	let image : String?
 	let usr_type : String?
-	let user : User?
 	let token : String?
 
 	enum CodingKeys: String, CodingKey {
@@ -42,7 +41,6 @@ struct UserData : Codable {
 		case verificationcode = "verificationcode"
 		case image = "image"
 		case usr_type = "usr_type"
-		case user = "user"
 		case token = "token"
 	}
 }

@@ -13,8 +13,8 @@ For support, please feel free to contact me at https://www.linkedin.com/in/syeda
 
 import Foundation
 struct Products : Codable {
+    let name: String?
 	let product_id : String?
-	let used_with : String?
 	let vin_number : String?
 	let part_number : String?
 	let part_number2 : String?
@@ -23,10 +23,8 @@ struct Products : Codable {
 	let sub_category_id : String?
 	let quantity : String?
 	let price : String?
-	let discount_price : String?
+	//let discount_price : String?
 	let image : String?
-	let is_show : String?
-	let is_featured : String?
 	let added_on : String?
 	let seller_id : String?
 	let userID : String?
@@ -40,40 +38,26 @@ struct Products : Codable {
 	let sort_order : String?
 	let model : String?
 	let sku : String?
-	let width : String?
-	let minimum : String?
-	let subtract : String?
 	let stock_status_id : String?
-	let type_id : String?
-	let size_id : String?
-	let shape_id : String?
-	let genral : String?
-	let shipping : String?
-	let uv_protection : String?
-	let show_in_menu : String?
-	let length : String?
-	let date_available : String?
+    let height: String?
+    let weight: String?
+    let width: String?
+    let depth: String?
+    
 	let updated_at : String?
 	let created_at : String?
 	let descrp_id : String?
 	let slug : String?
 	let title : String?
 	let description : String?
-	let features_specification : String?
-	let additional_information : String?
-	let extended_warranty : String?
-	let tag : String?
-	let meta_title : String?
-	let meta_description : String?
-	let meta_keyword : String?
-	let product_seo_url : String?
-	let total_rating : Int?
-	let rating_avg : Int?
+	
+	let total_rating : Double?
+	let rating_avg : Double?
 	let brand_name : String?
 
 	enum CodingKeys: String, CodingKey {
+        case name = "name"
 		case product_id = "product_id"
-		case used_with = "used_with"
 		case vin_number = "vin_number"
 		case part_number = "part_number"
 		case part_number2 = "part_number2"
@@ -81,10 +65,8 @@ struct Products : Codable {
 		case sub_category_id = "sub_category_id"
 		case quantity = "quantity"
 		case price = "price"
-		case discount_price = "discount_price"
+		//case discount_price = "discount_price"
 		case image = "image"
-		case is_show = "is_show"
-		case is_featured = "is_featured"
 		case added_on = "added_on"
 		case seller_id = "seller_id"
 		case userID = "userID"
@@ -98,36 +80,24 @@ struct Products : Codable {
 		case sort_order = "sort_order"
 		case model = "model"
 		case sku = "sku"
-		case width = "width"
-		case minimum = "minimum"
-		case subtract = "subtract"
 		case stock_status_id = "stock_status_id"
-		case type_id = "type_id"
-		case size_id = "size_id"
-		case shape_id = "shape_id"
-		case genral = "genral"
-		case shipping = "shipping"
-		case uv_protection = "uv_protection"
-		case show_in_menu = "show_in_menu"
-		case length = "length"
-		case date_available = "date_available"
+
+		
 		case updated_at = "updated_at"
 		case created_at = "created_at"
 		case descrp_id = "descrp_id"
 		case slug = "slug"
 		case title = "title"
 		case description = "description"
-		case features_specification = "features_specification"
-		case additional_information = "additional_information"
-		case extended_warranty = "extended_warranty"
-		case tag = "tag"
-		case meta_title = "meta_title"
-		case meta_description = "meta_description"
-        case meta_keyword = "meta_keyword"
-		case product_seo_url = "product_seo_url"
+		
 		case total_rating = "total_rating"
 		case rating_avg = "rating_avg"
 		case brand_name = "brand_name"
+        
+        case height = "height"
+        case weight = "weight"
+        case width = "width"
+        case depth = "depth"
 	}
 
 }

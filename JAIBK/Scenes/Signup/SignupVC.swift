@@ -6,7 +6,8 @@
 //
 
 import UIKit
-
+import SVProgressHUD
+import Photos
 class SignupVC: UIViewController, UINavigationControllerDelegate {
     private (set) lazy var containerView: UIView = { [unowned self] in
         let view = UIView()
@@ -209,6 +210,12 @@ extension SignupVC: UIImagePickerControllerDelegate {
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         imagePicker.dismiss(animated: true, completion: nil)
+        
+        if let url = info[UIImagePickerController.InfoKey.imageURL] as? URL {
+            let fileName = url.lastPathComponent
+            uplaodImgView.setData(text: fileName)
+        }
+        
         image = info[UIImagePickerController.InfoKey.originalImage] as! UIImage
         
         let jpegCompressionQuality: CGFloat = 0.5 // Set this to whatever suits your purpose
@@ -217,7 +224,7 @@ extension SignupVC: UIImagePickerControllerDelegate {
         var imageSize: Int = imgData.count
         print("actual size of image in KB: %f ", Double(imageSize) / 1000.0)
         if let string = image.jpegData(compressionQuality: jpegCompressionQuality)?.base64EncodedString() {
-            base64String = string
+            base64String = "data:image/jpeg;base64,\(string)"
         }
     }
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
@@ -400,13 +407,18 @@ extension SignupVC {
                 return
             }
             let request = SingupRequest(firstname: self.firstNamtTxt, lastname: self.lastNamtTxt, email: self.emailTxt, password: self.passwordTxt, confirm_password: self.confirmPasswordTxt, user_type: self.userType.rawValue, company: self.companyNameTxt, seller_img: self.base64String, role: self.userRole)
-            
+            print(request)
+            SVProgressHUD.show()
             ServiceManager.shared.sendRequest(request: request, model: UserModel.self) { result in
+                SVProgressHUD.dismiss()
                 switch result {
                 case .success(let response):
                     DispatchQueue.main.async {
                         if response.success ?? false {
-                            print(response.data)
+                            if let data = response.data {
+                                AppUtils.shared.saveUser(user: data)
+                                AppUtils.shared.saveToken(token: data.token ?? "")
+                            }
                         } else {
                             self.showAlert(withTitle: "Alert", message: response.message ?? "")
                         }

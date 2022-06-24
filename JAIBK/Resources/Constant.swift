@@ -62,6 +62,6 @@ extension Constant {
         static let UPDATE_CART              =   "updateCart"
         static let DELETE_CART              =   "deleteCart"
         
-        
+        static let PRODUCT_DETAIL           =   "getProductDetail"
     }
 }

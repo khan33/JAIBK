@@ -129,8 +129,11 @@ extension ProductsVC: UICollectionViewDataSource, UICollectionViewDelegate, UICo
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let vc = ProductDetailVC()
-        self.navigationController?.pushViewController(vc, animated: true)
+        if let id = products[indexPath.row].product_id {
+            let vc = ProductDetailVC(id: id)
+            self.navigationController?.pushViewController(vc, animated: true)
+        }
+        
     }
     
 }
