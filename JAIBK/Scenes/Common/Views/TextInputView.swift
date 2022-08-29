@@ -51,6 +51,7 @@ class TextInputView: UIView {
         } else {
             txtField.isSecureTextEntry = false
         }
+        
         txtField.left(image: UIImage(named: icon))
         setUpContainerView()
         txtField.placeholder = placeholder

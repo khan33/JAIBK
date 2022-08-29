@@ -21,7 +21,7 @@ class ProductInfoViewCell: UICollectionViewCell {
         lbl.translatesAutoresizingMaskIntoConstraints = false
         lbl.numberOfLines = 1
         lbl.text = "Brand Name"
-        UIColor.hexStringToUIColor(hex: "#000000")
+//        UIColor.hexStringToUIColor(hex: "#000000")
         lbl.font = UIFont(name: AppFontName.book, size: 14)
 
         return lbl
@@ -56,12 +56,13 @@ class ProductInfoViewCell: UICollectionViewCell {
         lbl.textColor = UIColor.hexStringToUIColor(hex: "#9B9B9B")
         return lbl
     }()
-    private (set) lazy var lblWriteReview: UILabel = {[unowned self] in
-        let lbl = UILabel()
-        lbl.font = UIFont(name: AppFontName.medium, size: 14)
-        lbl.text = "Write a Review"
-        UIColor.hexStringToUIColor(hex: "#000000")
-        return lbl
+    private (set) lazy var lblWriteReview: UIButton = {[unowned self] in
+        let btn = UIButton()
+        btn.titleLabel?.font = UIFont(name: AppFontName.medium, size: 14)
+        btn.setTitle("Write a Review", for: .normal)
+        btn.backgroundColor = .clear
+        btn.setTitleColor(UIColor.hexStringToUIColor(hex: "#9B9B9B"), for: .normal)
+        return btn
     }()
     
     
@@ -84,7 +85,7 @@ class ProductInfoViewCell: UICollectionViewCell {
     private (set) lazy var lblProductDesc: UILabel = {[unowned self] in
         let lbl = UILabel()
         lbl.font = UIFont(name: AppFontName.book, size: 12)
-        lbl.text = "We need to confirm our protocol PinterestLayoutDelegate that we had created earlier which ask our ViewController about the height of the cell but how will we calculate it? We‘re going to write two functions one to calculate the appropriate photo’s height and another to calculate the required space to display the description so let’s start with the first one.         Here we need our API to provide so important information to help us figure out the perfect size based on the image aspect ratio to do so the backend developer must supply the dimensions of the photo as shown below"
+        lbl.text = ""
         UIColor.hexStringToUIColor(hex: "#000000")
         lbl.numberOfLines = 0
         return lbl
@@ -97,10 +98,16 @@ class ProductInfoViewCell: UICollectionViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
+        
     }
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        let attributedString = NSMutableAttributedString(string: "Write a Review")
+        let range: NSRange = attributedString.mutableString.range(of: "Write a Review", options: .caseInsensitive)
+        attributedString.addAttribute(.underlineStyle, value: NSUnderlineStyle.thick.rawValue, range: range)
+
+        lblWriteReview.setAttributedTitle(attributedString, for: .normal)
         loadUIView()
     }
     
@@ -175,6 +182,8 @@ class ProductInfoViewCell: UICollectionViewCell {
         lblWriteReview.snp.makeConstraints { make in
             make.trailing.equalTo(containerView.snp.trailing).offset(-16)
             make.top.equalTo(lblName.snp.bottom).offset(8)
+            make.height.equalTo(44)
+            make.width.equalTo(120)
         }
         if !lblPrice.isDescendant(of: containerView) {
             containerView.addSubview(lblPrice)

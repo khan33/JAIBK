@@ -114,32 +114,24 @@ extension ShopVC: UICollectionViewDataSource, UICollectionViewDelegate, UICollec
         return UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
     }
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        if indexPath.row == 0 {
-            if let id = category_data?[indexPath.row].id {
-                let vc = CarMaintanceVC(parent_id: id)
-                self.navigationController?.pushViewController(vc, animated: true)
-            }
-            
-        } else {
-            if let id = category_data?[indexPath.row].id {
+        
+        let check_sub_category = category_data?[indexPath.row].check_sub_category ?? false
+        if check_sub_category {
+            if let id = category_data?[indexPath.row].category_id {
                 let vc = SubCategoryVC(parent_id: id)
                 self.navigationController?.pushViewController(vc, animated: true)
             }
-            
+        } else {
+            if let id = category_data?[indexPath.row].category_id {
+                let vc = CategoryDetailVC(id: id)
+                self.navigationController?.pushViewController(vc, animated: false)
+            }
         }
     }
 }
 
 class CategoryRequest : RequestModel {
-    
-    
     override var path: String {
         return Constant.ServiceConstant.CATEGORIES
-    }
-    override var headers: [String : String] {
-        return [
-            "Content-Type" : "application/json",
-            "language_id": "1"
-        ]
     }
 }

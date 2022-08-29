@@ -27,6 +27,14 @@ struct AddressData : Codable {
 	let added_on : String?
 	let country_name : String?
 	let city_name : String?
+    
+    var fullName: String {
+        return (first_name ?? "") + " " + (last_name ?? "")
+    }
+    
+    var fullAddress: String {
+        return (address ?? "") + ", " + (city_name ?? "") + ", " + (country_name ?? "")
+    }
 
 	enum CodingKeys: String, CodingKey {
 

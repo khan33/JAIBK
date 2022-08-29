@@ -85,7 +85,7 @@ class ProdcutReviewCell: UICollectionViewCell {
     private (set) lazy var lblRatingDesc: UILabel = {[unowned self] in
         let lbl = UILabel()
         lbl.font = UIFont(name: AppFontName.book, size: 12)
-        lbl.text = "We need to confirm our protocol PinterestLayoutDelegate that we had created earlier which ask our ViewController about the height of the cell but how will we calculate it? We‘re going to write two functions one to calculate the appropriate photo’s height and another to calculate the required space to display the description so let’s start with the first one.         Here we need our API to provide so important information to help us figure out the perfect size based on the image aspect ratio to do so the backend developer must supply the dimensions of the photo as shown below"
+        lbl.text = ""
         UIColor.hexStringToUIColor(hex: "#000000")
         lbl.numberOfLines = 0
         return lbl
@@ -221,17 +221,51 @@ class ProdcutReviewCell: UICollectionViewCell {
             make.width.height.equalTo(88)
             make.bottom.equalTo(containerView).offset(-10)
         }
-        imgView2.image = UIImage(named: "image 31")
-        imgView2.layer.cornerRadius = 12
-        if !imgView2.isDescendant(of: containerView) {
-            containerView.addSubview(imgView2)
-        }
-        imgView2.snp.remakeConstraints { make in
-            make.top.equalTo(lblRatingDesc.snp.bottom).offset(16)
-            make.leading.equalTo(imgView1.snp.trailing).offset(16)
-            make.width.height.equalTo(88)
-            make.bottom.equalTo(containerView).offset(-10)
-        }
+//        imgView2.image = UIImage(named: "image 31")
+//        imgView2.layer.cornerRadius = 12
+//        if !imgView2.isDescendant(of: containerView) {
+//            containerView.addSubview(imgView2)
+//        }
+//        imgView2.snp.remakeConstraints { make in
+//            make.top.equalTo(lblRatingDesc.snp.bottom).offset(16)
+//            make.leading.equalTo(imgView1.snp.trailing).offset(16)
+//            make.width.height.equalTo(88)
+//            make.bottom.equalTo(containerView).offset(-10)
+//        }
         
+    }
+    
+    
+    var review: [Review]? {
+        didSet {
+            guard let item = review else { return }
+            if item.count > 0 {
+                lblUserNmae.text = (item[0].firstname ?? "") + " " + (item[0].lastname ?? "")
+                lblRatingDesc.text = item[0].review
+                if let rating = item[0].rating {
+                    userRatingView.rating = Double(3) ?? 0.0
+                }
+                
+                if let img = item[0].review_image {
+                    imgView1.sd_setImage(with: URL(string: Constant.baseURL + "images/reviews/" + img), placeholderImage: UIImage(named: "image 31"))
+                }
+            }
+            
+            
+        }
+    }
+    
+    var product: Products? {
+        didSet {
+            print(product)
+            guard let item = product else { return }
+            print(item)
+            if let total = product?.total_rating {
+                lblTotalReview.text = "(\(String(describing: total)) Reviews)"
+            }
+            if let avg_rating = product?.rating_avg {
+                ratingView.rating = Double(avg_rating)
+            }
+        }
     }
 }

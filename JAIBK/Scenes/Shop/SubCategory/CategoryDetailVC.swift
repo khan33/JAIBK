@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SVProgressHUD
 
 class CategoryDetailVC: UIViewController {
     private (set) lazy var txtField: UITextField = {[unowned self] in
@@ -89,7 +90,7 @@ class CategoryDetailVC: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    
+    private var products: [Products]?
     override func viewDidLoad() {
         super.viewDidLoad()
         txtField.left(image: UIImage(named: "search"), mode: .always)
@@ -106,12 +107,15 @@ class CategoryDetailVC: UIViewController {
     }
     
     private func getCategoryDetail() {
-        ServiceManager.shared.sendRequest(request: SubCategoryRequest(id: ""), model: CategoryModel.self) { result in
+        SVProgressHUD.show()
+        ServiceManager.shared.sendRequest(request: SubCategoryProductRequest(id: id), model: ProductByCategoryModel.self) { result in
+            SVProgressHUD.dismiss()
             switch result {
             case .success(let response):
                 if response.success ?? false {
                     DispatchQueue.main.async {
-                       
+                        self.products = response.products
+                        self.collectionView.reloadData()
                     }
                 }
             case .failure(let error):
@@ -218,11 +222,12 @@ extension CategoryDetailVC: UICollectionViewDataSource, UICollectionViewDelegate
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 5
+        return products?.count ?? 0
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(with: ProductCell.self, for: indexPath)
+        cell.product = products?[indexPath.row]
         return cell
     }
     
@@ -235,6 +240,35 @@ extension CategoryDetailVC: UICollectionViewDataSource, UICollectionViewDelegate
     }
     
 }
+
+
+
+struct ProductByCategoryModel : Codable {
+    
+    let success : Bool?
+    let products : [Products]?
+    
+    enum CodingKeys: String, CodingKey {
+
+        case success = "success"
+        case products = "data"
+    }
+}
+
+class SubCategoryProductRequest : RequestModel {
+    private var id: String
+    init(id: String) {
+        self.id = id
+        
+    }
+    
+    override var path: String {
+        return Constant.ServiceConstant.PRODUCT_BY_SUB_CATEGORIES + "?sub_category_id=\(id)"
+    }
+    
+    
+}
+
 
 
 class CategoryDetailRequest : RequestModel {
@@ -258,12 +292,7 @@ class CategoryDetailRequest : RequestModel {
     override var path: String {
         return Constant.ServiceConstant.SUB_CATEGORIES
     }
-    override var headers: [String : String] {
-        return [
-            "Content-Type" : "application/json",
-            "language_id": "1"
-        ]
-    }
+    
     override var parameters: [String: Any?] {
         return
             [

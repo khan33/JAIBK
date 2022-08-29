@@ -10,8 +10,12 @@ import Foundation
 enum CartRequestModel {
     class AddCartRequest : RequestModel {
         var product_id: String
-        init(product_id: String) {
+        var type: String
+        var quantity: Int
+        init(product_id: String, type: String, quantity: Int) {
             self.product_id = product_id
+            self.type = type
+            self.quantity = quantity
         }
         
         override var path: String {
@@ -21,23 +25,22 @@ enum CartRequestModel {
         
         override var body: [String : Any?] {
             return [
-                "product_id" : product_id
+                "product_id" : product_id,
+                "qty": quantity,
+                "type": type
             ]
         }
         
         
-        override var headers: [String : String] {
-            return [
-                "Content-Type" : "application/json",
-                "language_id": "1"
-            ]
-        }
+        
     }
     class DeleteCartRequest : RequestModel {
         var id: String
+        var type: String
         
-        init(id: String) {
+        init(id: String, type: String) {
             self.id = id
+            self.type  = type
         }
         
         override var path: String {
@@ -49,23 +52,21 @@ enum CartRequestModel {
         }
         override var body: [String : Any?] {
             return [
-                "product_id" : id
+                "product_id" : id,
+                "type": type
             ]
         }
-        override var headers: [String : String] {
-            return [
-                "Content-Type" : "application/json",
-                "language_id": "1"
-            ]
-        }
+        
     }
     class UpdateCartRequest : RequestModel {
         var product_id: String
-        var quantity: String
+        var quantity: Int
+        var type: String
 
-        init(product_id: String, quantity: String) {
+        init(product_id: String, quantity: Int, type: String) {
             self.product_id = product_id
             self.quantity = quantity
+            self.type  = type
         }
         
         override var path: String {
@@ -76,17 +77,12 @@ enum CartRequestModel {
         override var body: [String : Any?] {
             return [
                 "product_id" : product_id,
-                "quantity": quantity
-                
+                "quantity": quantity,
+                "type": type
             ]
         }
         
-        override var headers: [String : String] {
-            return [
-                "Content-Type" : "application/json",
-                "language_id": "1"
-            ]
-        }
+        
     }
     class CartRequest : RequestModel {
         
@@ -99,12 +95,52 @@ enum CartRequestModel {
             return .get
         }
         
-        override var headers: [String : String] {
+        
+    }
+    
+}
+
+
+enum CheckoutRequestModel {
+    class CheckoutRequest : RequestModel {
+        var first_name: String
+        var last_name: String
+        var email: String
+        var address: String
+        var country: String
+        var city: String
+        var payment_methood: String
+        
+        init(first_name: String, last_name: String, email: String, address: String, country: String, city: String, payment_methood: String) {
+            self.first_name = first_name
+            self.last_name = last_name
+            self.email = email
+            self.address = address
+            self.country = country
+            self.city = city
+            self.payment_methood = payment_methood
+        }
+        
+        override var path: String {
+            return Constant.ServiceConstant.ADD_CART
+        }
+        
+        
+        override var body: [String : Any?] {
             return [
-                "Content-Type" : "application/json",
-                "language_id": "1"
+                "first_name" : first_name,
+                "last_name": last_name,
+                "email": email,
+                "address" : address,
+                "country": country,
+                "city": city,
+                "payment_methood": payment_methood
             ]
         }
+        
+        
+        
     }
+    
     
 }

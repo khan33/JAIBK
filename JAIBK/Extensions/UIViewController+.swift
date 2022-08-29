@@ -42,6 +42,16 @@ extension UIViewController {
         self.present(alertController, animated: true, completion: nil)
       }
     
+    func showAlertOkAction(withTitle title: String, message : String, _ dismissCompletion: @escaping () -> Void) {
+        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        let OKAction = UIAlertAction(title: "OK", style: .default) { action in
+            print("You've pressed OK Button")
+            dismissCompletion()
+        }
+        alertController.addAction(OKAction)
+        self.present(alertController, animated: true, completion: nil)
+      }
+    
 }
 struct AppFontName {
     static let bold = "GothamNarrow-Bold"

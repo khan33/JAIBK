@@ -18,13 +18,15 @@ struct User : Codable {
 	let email : String?
 	let company : String?
 	let role : String?
-	let verificationcode : Int?
+	let verificationcode : String?
 	let image : String?
 	let usr_type : String?
 	let updated_at : String?
 	let created_at : String?
 	let id : Int?
-
+    var userName: String {
+        return (firstname ?? "") + " " + (lastname ?? "")
+    }
 	enum CodingKeys: String, CodingKey {
 
 		case firstname = "firstname"

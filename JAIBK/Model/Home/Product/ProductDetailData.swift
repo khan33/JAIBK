@@ -23,6 +23,7 @@ struct ProductDetailData : Codable {
 	let options : [String]?
 	let product_images : [Product_images]?
 	let related_product : [Products]?
+    let is_review: Bool
 
 	enum CodingKeys: String, CodingKey {
 
@@ -35,6 +36,7 @@ struct ProductDetailData : Codable {
 		case options = "options"
 		case product_images = "product_images"
         case related_product = "related_product"
+        case is_review = "is_review"
 	}
 
 }

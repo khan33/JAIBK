@@ -45,12 +45,7 @@ enum WishlistRequestModel {
         }
         
         
-        override var headers: [String : String] {
-            return [
-                "Content-Type" : "application/json",
-                "language_id": "1"
-            ]
-        }
+        
     }
     class DeleteWishlistRequest : RequestModel {
         var id: String
@@ -67,12 +62,7 @@ enum WishlistRequestModel {
             return .post
         }
         
-        override var headers: [String : String] {
-            return [
-                "Content-Type" : "application/json",
-                "language_id": "1"
-            ]
-        }
+        
     }
     class UpdateWishlistRequest : RequestModel {
         var first_name: String
@@ -110,12 +100,7 @@ enum WishlistRequestModel {
             ]
         }
         
-        override var headers: [String : String] {
-            return [
-                "Content-Type" : "application/json",
-                "language_id": "1"
-            ]
-        }
+       
     }
     class WishlistRequest : RequestModel {
         
@@ -128,12 +113,7 @@ enum WishlistRequestModel {
             return .get
         }
         
-        override var headers: [String : String] {
-            return [
-                "Content-Type" : "application/json",
-                "language_id": "1"
-            ]
-        }
+        
     }
     
 }

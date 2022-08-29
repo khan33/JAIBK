@@ -41,7 +41,8 @@ class BlogDetailVC: UIViewController {
     private (set) lazy var imgView: UIImageView = { [unowned self] in
         var imgView = UIImageView()
         imgView.clipsToBounds = true
-        imgView.contentMode = .scaleAspectFit
+        imgView.contentMode = .scaleAspectFill
+        view.layer.cornerRadius = 6
         return imgView
     }()
     
@@ -126,7 +127,7 @@ extension BlogDetailVC {
             contentView.addSubview(stackView)
         }
         stackView.snp.makeConstraints{ make -> Void in
-            make.top.equalToSuperview().offset(20)
+            make.top.equalToSuperview().offset(8)
             make.leading.trailing.equalToSuperview().inset(8)
             make.bottom.equalToSuperview()
         }

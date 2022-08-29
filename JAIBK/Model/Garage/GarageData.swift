@@ -22,7 +22,7 @@ struct GarageData : Codable {
 	let color : String?
 	let vin_number : String?
 	let title : String?
-	let description : String?
+	let desc : String?
 	let user_id : String?
 	let image : String?
 	let added_on : String?
@@ -39,7 +39,7 @@ struct GarageData : Codable {
 		case color = "color"
 		case vin_number = "vin_number"
 		case title = "title"
-		case description = "description"
+		case desc = "description"
 		case user_id = "user_id"
 		case image = "image"
 		case added_on = "added_on"

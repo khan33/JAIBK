@@ -15,17 +15,27 @@ import Foundation
 struct PaymentData : Codable {
 	let id : String?
 	let user_id : String?
+    let order_id: String?
 	let card_numbr : String?
 	let expiry_date : String?
 	let added_on : String?
+    let name_on_card: String?
+    let cvv: String?
+    let stripe_payment_id: String?
+    let stripe_status: String?
+    
 
 	enum CodingKeys: String, CodingKey {
-
 		case id = "id"
 		case user_id = "user_id"
 		case card_numbr = "card_numbr"
 		case expiry_date = "expiry_date"
 		case added_on = "added_on"
+        case order_id = "order_id"
+        case name_on_card = "name_on_card"
+        case cvv = "cvv"
+        case stripe_payment_id = "stripe_payment_id"
+        case stripe_status = "stripe_status"
 	}
 
 }

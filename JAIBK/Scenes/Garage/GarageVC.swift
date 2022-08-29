@@ -23,13 +23,19 @@ class GarageVC: UIViewController {
         collectionView.register(GarageViewCell.self, forCellWithReuseIdentifier: "GarageViewCell")
         return collectionView
     }()
+    
+
     var garageData : [GarageData]?
     override func viewDidLoad() {
         super.viewDidLoad()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
         configNav()
         setupViews()
         GetGarage()
     }
+    
     
     private func GetGarage() {
         ServiceManager.shared.sendRequest(request: GarageRequestModel.GarageRequest(), model: GarageModel.self) { result in
@@ -47,6 +53,11 @@ class GarageVC: UIViewController {
         }
     }
     
+    @objc func addGarge() {
+        let vc = AddGarageVC(data: nil)
+        self.navigationController?.pushViewController(vc, animated: false)
+    }
+    
     func configNav() {
         navigationController?.navigationBar.titleTextAttributes = [
             .foregroundColor: UIColor.black,
@@ -57,6 +68,9 @@ class GarageVC: UIViewController {
         let backButton = UIBarButtonItem()
         backButton.title = "Back"
         navigationController?.navigationBar.topItem?.backBarButtonItem = backButton
+        let addBarButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addGarge))
+        self.navigationItem.rightBarButtonItem = addBarButton
+
     }
 }
 extension GarageVC {
@@ -75,6 +89,10 @@ extension GarageVC {
     }
     @objc func didTapEditBtn(_ sender: UIButton) {
         let tag = sender.tag
+        let data = garageData?[tag]
+        let vc = AddGarageVC(data: data)
+        self.navigationController?.pushViewController(vc, animated: false)
+        
     }
     
     @objc func didTapRemoveBtn(_ sender: UIButton) {
@@ -100,15 +118,6 @@ extension GarageVC {
                     DispatchQueue.main.async {
                         self.garageData?.remove(at: index)
                         self.collectionView.reloadData()
-//                        if self.garageData?.count == 1 {
-//                            self.garageData?.remove(at: index)
-//                            self.collectionView.reloadData()
-//                        } else {
-//                            let indexPath = IndexPath(item: index, section: 0)
-//                            self.collectionView.deleteItems(at: [indexPath])
-//                            self.garageData?.remove(at: index)
-//                            self.collectionView.reloadData()
-//                        }
                     }
                 }
             case .failure(let error):
@@ -122,6 +131,11 @@ extension GarageVC: UICollectionViewDataSource, UICollectionViewDelegate, UIColl
     
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        if garageData?.count ?? 0 == 0 {
+            collectionView.setEmptyView(title: "No Record Found", message: "")
+        } else {
+            collectionView.restore()
+        }
         return garageData?.count ?? 0
     }
     

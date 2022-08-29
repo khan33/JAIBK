@@ -26,3 +26,5 @@ struct UserModel : Codable {
 		case data = "data"
 	}
 }
+
+

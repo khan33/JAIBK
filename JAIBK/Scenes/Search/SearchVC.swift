@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SVProgressHUD
 
 class SearchVC: UIViewController {
     
@@ -119,30 +120,35 @@ class SearchVC: UIViewController {
     var yearDataSource: GenericPickerDataSource<Years>?
     var yearView: PickerFieldView!
     private var yearTxt: String = ""
+    private var yearIdTxt: String = ""
     private var selectedYearItem: Int = 0
     
     var makesDataSource: GenericPickerDataSource<Makes>?
     var makeView: PickerFieldView!
     private var makeTxt: String = ""
+    private var makeIdTxt: String = ""
     private var selectedMakeItem: Int = 0
     
     var modelsDataSource: GenericPickerDataSource<Models>?
     var modelView: PickerFieldView!
     private var modelTxt: String = ""
+    private var modelIdTxt: String = ""
     private var selectedModelItem: Int = 0
     
     var engineDataSource: GenericPickerDataSource<Engines>?
     var engineView: PickerFieldView!
     private var engineTxt: String = ""
+    private var engineIdTxt: String = ""
     private var selectedEngineItem: Int = 0
     
     var partsView: CheckboxView!
     var servicView: CheckboxView!
     private var checkedPartCheckbox: Bool = false
     private var checkedServiceCheckbox: Bool = false
-    
-    
     var VINNumberView: TextInputView!
+    private var vinNumberTxt: String = ""
+    var searchType: SearchByType = .car
+    private var productsByCar: [Products]?
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
@@ -175,6 +181,7 @@ class SearchVC: UIViewController {
         yearView.isHidden = false
         makeView.isHidden = false
         engineView.isHidden = false
+        searchType = .car
         
     }
     @objc func didTapOnVINSearchBtn(_ sender: UIButton) {
@@ -183,7 +190,7 @@ class SearchVC: UIViewController {
         yearView.isHidden = true
         makeView.isHidden = true
         engineView.isHidden = true
-        
+        searchType = .vin
     }
     
     private func resetStack() {
@@ -215,6 +222,7 @@ extension SearchVC {
                         }, row: self.selectedYearItem,  didSelect: { (data) in
                             self.yearView?.txtField.text = data.name
                             self.yearTxt = data.name ?? ""
+                            self.yearIdTxt = data.id ?? ""
                             self.selectedYearItem = self.years?.firstIndex(where: {$0.name == self.yearTxt}) ?? 0
                         })
             self.yearView?.txtField.setupPickerField(withDataSource: self.yearDataSource!)
@@ -230,6 +238,7 @@ extension SearchVC {
                         }, row: self.selectedMakeItem,  didSelect: { (data) in
                             self.makeView?.txtField.text = data.name
                             self.makeTxt = data.name ?? ""
+                            self.makeIdTxt = data.id ?? ""
                             self.selectedMakeItem = self.makes?.firstIndex(where: {$0.name == self.makeTxt}) ?? 0
                         })
             self.makeView?.txtField.setupPickerField(withDataSource: self.makesDataSource!)
@@ -247,6 +256,7 @@ extension SearchVC {
                         }, row: self.selectedModelItem,  didSelect: { (data) in
                             self.modelView?.txtField.text = data.name
                             self.modelTxt = data.name ?? ""
+                            self.modelIdTxt = data.id ?? ""
                             self.selectedModelItem = self.makes?.firstIndex(where: {$0.name == self.makeTxt}) ?? 0
                         })
             self.modelView?.txtField.setupPickerField(withDataSource: self.modelsDataSource!)
@@ -264,6 +274,7 @@ extension SearchVC {
                         }, row: self.selectedEngineItem,  didSelect: { (data) in
                             self.engineView?.txtField.text = data.name
                             self.engineTxt = data.name ?? ""
+                            self.engineIdTxt = data.id ?? ""
                             self.selectedEngineItem = self.makes?.firstIndex(where: {$0.name == self.makeTxt}) ?? 0
                         })
             self.engineView?.txtField.setupPickerField(withDataSource: self.engineDataSource!)
@@ -274,8 +285,9 @@ extension SearchVC {
     
     private func searchViewByVIN() {
         lblChosing.text = "Search by Vehicle VIN number"
-        VINNumberView = TextInputView(placeholder: "VIN Number", isPasswordEnable: true, icon: "") { [weak self] (enteredText) in
+        VINNumberView = TextInputView(placeholder: "VIN Number", isPasswordEnable: false, icon: "") { [weak self] (enteredText) in
             guard let self = self else {return}
+            self.vinNumberTxt = enteredText
         }
         VINNumberView.txtField.setLeftPaddingPoints(10)
         stackView.addArrangedSubview(VINNumberView)
@@ -327,9 +339,56 @@ extension SearchVC {
         
         let btnView = CenterButtonView.init(title: "Search") { [weak self] (clicked) in
             guard let self = self else {return}
+            
+            if self.searchType == .car {
+                self.searchByCar()
+            } else {
+                self.searchByVINNumber()
+            }
+            
         }
         stackView.addArrangedSubview(btnView)
 
+    }
+    
+    private func searchByVINNumber() {
+        SVProgressHUD.show()
+        ServiceManager.shared.sendRequest(request: SearchRequestModel.SearchByVIN(vin_number: vinNumberTxt), model: ProductByCategoryModel.self) { result in
+            SVProgressHUD.dismiss()
+            switch result {
+            case .success(let response):
+                if response.success ?? false {
+                    DispatchQueue.main.async {
+                        if let product = response.products {
+                            let vc = ProductsVC(products: product)
+                            self.navigationController?.pushViewController(vc, animated: true)
+                        }
+                    }
+                }
+            case .failure(let error):
+                print(error)
+            }
+        }
+    }
+    
+    private func searchByCar() {
+        SVProgressHUD.show()
+        ServiceManager.shared.sendRequest(request: SearchRequestModel.SearchByCarRequest(year: self.yearIdTxt, make: self.makeIdTxt, engine: self.engineIdTxt, model: self.modelIdTxt), model: ProductByCategoryModel.self) { result in
+            SVProgressHUD.dismiss()
+            switch result {
+            case .success(let response):
+                if response.success ?? false {
+                    DispatchQueue.main.async {
+                        if let product = response.products {
+                            let vc = ProductsVC(products: product)
+                            self.navigationController?.pushViewController(vc, animated: true)
+                        }
+                    }
+                }
+            case .failure(let error):
+                print(error)
+            }
+        }
     }
     
     private func searchTxtField() {
@@ -373,11 +432,10 @@ class DropdownOption : RequestModel {
     override var path: String {
         return Constant.ServiceConstant.DROPDOWN_OPTIONS
     }
-    override var headers: [String : String] {
-        return [
-            "Content-Type" : "application/json",
-            "language_id": "1"
-        ]
-    }
-    
+}
+
+
+enum SearchByType: String {
+    case car = "bycar"
+    case vin = "vin"
 }

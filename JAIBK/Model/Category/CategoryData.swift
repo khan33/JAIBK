@@ -27,6 +27,7 @@ struct CategoryData : Codable {
 	let title : String?
 	let slug : String?
 	let description : String?
+    let check_sub_category: Bool?
 	
 
 	enum CodingKeys: String, CodingKey {
@@ -45,5 +46,6 @@ struct CategoryData : Codable {
 		case title = "title"
 		case slug = "slug"
 		case description = "description"
+        case check_sub_category = "check_sub_category"
 	}
 }

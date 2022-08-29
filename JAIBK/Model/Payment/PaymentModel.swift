@@ -15,10 +15,11 @@ import Foundation
 struct PaymentModel : Codable {
 	let success : Bool?
 	let data : [PaymentData]?
+    let message: String?
 
 	enum CodingKeys: String, CodingKey {
-
 		case success = "success"
 		case data = "data"
+        case message = "message"
 	}
 }

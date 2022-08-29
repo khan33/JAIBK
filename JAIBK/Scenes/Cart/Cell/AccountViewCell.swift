@@ -23,6 +23,19 @@ class AccountViewCell: UICollectionViewCell {
         lbl.textColor = UIColor.hexStringToUIColor(hex: "#000000")
         return lbl
     }()
+    private (set) lazy var loginBtn: UIButton = {[unowned self] in
+        let btn = UIButton()
+        btn.setTitle("Log in", for: .normal)
+        btn.backgroundColor = .clear
+        return btn
+    }()
+    private (set) lazy var signupBtn: UIButton = {[unowned self] in
+        let btn = UIButton()
+        return btn
+    }()
+    
+    
+    
     private (set) lazy var lblCreateAccount: UILabel = {[unowned self] in
         let lbl = UILabel()
         lbl.translatesAutoresizingMaskIntoConstraints = false

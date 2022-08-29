@@ -42,12 +42,6 @@ enum AddressRequestModel {
         }
         
         
-        override var headers: [String : String] {
-            return [
-                "Content-Type" : "application/json",
-                "language_id": "1"
-            ]
-        }
     }
     class DeleteAddressRequest : RequestModel {
         var id: String
@@ -64,12 +58,7 @@ enum AddressRequestModel {
             return .post
         }
         
-        override var headers: [String : String] {
-            return [
-                "Content-Type" : "application/json",
-                "language_id": "1"
-            ]
-        }
+        
     }
     class UpdateAddressRequest : RequestModel {
         var first_name: String
@@ -107,12 +96,7 @@ enum AddressRequestModel {
             ]
         }
         
-        override var headers: [String : String] {
-            return [
-                "Content-Type" : "application/json",
-                "language_id": "1"
-            ]
-        }
+        
     }
     class AddressRequest : RequestModel {
         
@@ -125,12 +109,7 @@ enum AddressRequestModel {
             return .get
         }
         
-        override var headers: [String : String] {
-            return [
-                "Content-Type" : "application/json",
-                "language_id": "1"
-            ]
-        }
+        
     }
     class CountryRequest : RequestModel {
         
@@ -143,12 +122,7 @@ enum AddressRequestModel {
             return .get
         }
         
-        override var headers: [String : String] {
-            return [
-                "Content-Type" : "application/json",
-                "language_id": "1"
-            ]
-        }
+        
     }
     
     class CityRequest : RequestModel {
@@ -159,18 +133,13 @@ enum AddressRequestModel {
         }
         
         override var path: String {
-            return Constant.ServiceConstant.GET_CITY + "/" + country_code
+            return Constant.ServiceConstant.GET_CITY + "?country_code=" + country_code
         }
         
         override var method: RequestHTTPMethod {
             return .get
         }
         
-        override var headers: [String : String] {
-            return [
-                "Content-Type" : "application/json",
-                "language_id": "1"
-            ]
-        }
+        
     }
 }

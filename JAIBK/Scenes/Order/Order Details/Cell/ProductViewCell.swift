@@ -66,6 +66,11 @@ class ProductViewCell: UICollectionViewCell {
         lbl.textColor = UIColor.hexStringToUIColor(hex: "#000000")
         return lbl
     }()
+    lazy var width: NSLayoutConstraint = {
+        let width = contentView.widthAnchor.constraint(equalToConstant: bounds.size.width)
+        width.isActive = true
+        return width
+    }()
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
@@ -80,9 +85,11 @@ class ProductViewCell: UICollectionViewCell {
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+    override func systemLayoutSizeFitting(_ targetSize: CGSize, withHorizontalFittingPriority horizontalFittingPriority: UILayoutPriority, verticalFittingPriority: UILayoutPriority) -> CGSize {
+        width.constant = bounds.size.width
+        return contentView.systemLayoutSizeFitting(CGSize(width: targetSize.width, height: 140))
+    }
     private func loadUIView()  {
-        
         if !lblProduct.isDescendant(of: contentView) {
             contentView.addSubview(lblProduct)
         }
@@ -90,13 +97,13 @@ class ProductViewCell: UICollectionViewCell {
             make.top.leading.trailing.equalTo(contentView).offset(8)
         }
         
-        
         if !containerView.isDescendant(of: contentView) {
             contentView.addSubview(containerView)
         }
         containerView.snp.makeConstraints { make in
             make.top.equalTo(lblProduct.snp.bottom).offset(8)
             make.leading.trailing.bottom.equalTo(contentView).inset(8)
+            make.height.equalTo(100)
         }
         containerView.layoutIfNeeded()
         containerView.setGradientBorder(width: 2.0, colors: [UIColor.hexStringToUIColor(hex: "#6082E0"), UIColor.hexStringToUIColor(hex: "#49B7B1")])
@@ -106,9 +113,9 @@ class ProductViewCell: UICollectionViewCell {
         }
         imgCoverView.snp.makeConstraints { make in
             make.leading.equalTo(contentView).offset(20)
-            make.height.equalTo(containerView).multipliedBy(0.8)
             make.width.equalTo(88)
             make.centerY.equalTo(containerView.snp.centerY)
+            make.height.equalTo(88)
         }
         
         if !productImageView.isDescendant(of: imgCoverView) {
@@ -117,7 +124,8 @@ class ProductViewCell: UICollectionViewCell {
         productImageView.snp.makeConstraints { make in
             make.centerY.equalTo(imgCoverView.snp.centerY)
             make.centerX.equalTo(imgCoverView.snp.centerX)
-            make.width.equalTo(70)
+            make.width.equalTo(80)
+            make.height.equalTo(80)
         }
         
         if !lblProductName.isDescendant(of: containerView) {
@@ -125,7 +133,8 @@ class ProductViewCell: UICollectionViewCell {
         }
         lblProductName.snp.makeConstraints { (make) -> Void in
             make.leading.equalTo(imgCoverView.snp.trailing).offset(16)
-            make.top.equalTo(imgCoverView.snp.top).offset(8)
+            make.trailing.equalToSuperview().inset(16)
+            make.top.equalTo(imgCoverView.snp.top).inset(8)
         }
         
         if !lblBrandName.isDescendant(of: containerView) {
@@ -141,6 +150,7 @@ class ProductViewCell: UICollectionViewCell {
         lblPrice.snp.makeConstraints { (make) -> Void in
             make.leading.equalTo(lblProductName.snp.leading)
             make.top.equalTo(lblBrandName.snp.bottom).offset(8)
+           // make.bottom.equalTo(imgCoverView.snp.bottom)
         }
         
     }
@@ -150,6 +160,18 @@ class ProductViewCell: UICollectionViewCell {
         didSet {
             guard let data = data else { return }
             lblProductName.text = data.name
+            lblPrice.text = data.price
+            lblBrandName.text = data.brand_name
+            if let img = data.image {
+                productImageView.sd_setImage(with: URL(string: Constant.baseURL + "images/products/" + img), placeholderImage: UIImage(named: "item"))
+            }
+        }
+    }
+    
+    var enquireData: EnquireDetailData? {
+        didSet {
+            guard let data = enquireData else { return }
+            lblProductName.text = data.product_name
             lblPrice.text = data.price
             lblBrandName.text = data.brand_name
             if let img = data.image {

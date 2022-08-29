@@ -20,7 +20,8 @@ class OrderDetailVC: UIViewController {
         collectionView.isScrollEnabled = true
         collectionView.showsVerticalScrollIndicator = false
         collectionView.showsHorizontalScrollIndicator  = false
-       
+        
+        collectionView.register(OrderStatusViewCell.self, forCellWithReuseIdentifier: "OrderStatusViewCell")
         collectionView.register(ProductViewCell.self, forCellWithReuseIdentifier: "ProductViewCell")
         collectionView.register(ShippingViewCell.self, forCellWithReuseIdentifier: "ShippingViewCell")
         collectionView.register(PaymentDetailCell.self, forCellWithReuseIdentifier: "PaymentDetailCell")
@@ -94,14 +95,20 @@ extension OrderDetailVC: UICollectionViewDataSource, UICollectionViewDelegate, U
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if indexPath.section == 0 {
-            let cell = collectionView.dequeueReusableCell(with: ProductViewCell.self, for: indexPath)
-            cell.data = orderDetail?.data?[indexPath.row]
+            let cell = collectionView.dequeueReusableCell(with: OrderStatusViewCell.self, for: indexPath)
             return cell
         } else if indexPath.section == 1 {
+            let cell = collectionView.dequeueReusableCell(with: ProductViewCell.self, for: indexPath)
+            cell.data = orderDetail?.data?[indexPath.row]
+            if let img = orderDetail?.data?[indexPath.row].image {
+                cell.productImageView.sd_setImage(with: URL(string: Constant.baseURL + img), placeholderImage: UIImage(named: "item"))
+            }
+            return cell
+        } else if indexPath.section == 2 {
             let cell = collectionView.dequeueReusableCell(with: ShippingViewCell.self, for: indexPath)
             cell.shipping = orderDetail?.shipping_data?[indexPath.row]
             return cell
-        }  else if indexPath.section == 2 {
+        }  else if indexPath.section == 3 {
             let cell = collectionView.dequeueReusableCell(with: PaymentDetailCell.self, for: indexPath)
             cell.data = orderDetail
             return cell
@@ -115,8 +122,9 @@ extension OrderDetailVC: UICollectionViewDataSource, UICollectionViewDelegate, U
     func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         
         if indexPath.section == 0 {
+            return CGSize(width: collectionView.frame.width - 20, height: 80)
+        } else if indexPath.section == 1 {
             return CGSize(width: collectionView.frame.width - 20, height: 140)
-
         }
         return CGSize(width: collectionView.frame.width - 20, height: 200)
     }
@@ -146,10 +154,5 @@ class  OrderDetailRequest: RequestModel {
         ]
     }
     
-    override var headers: [String : String] {
-        return [
-            "Content-Type" : "application/json",
-            "session_id": "okbv2pGg4jldTp6WyV5osuNl76bkSW01BRi2Mgpc"
-        ]
-    }
+    
 }

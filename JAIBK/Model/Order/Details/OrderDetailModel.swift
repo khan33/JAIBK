@@ -18,7 +18,7 @@ struct OrderDetailModel : Codable {
 	let shipping_data : [ShippingData]?
 	let total_items : Int?
 	let sub_total : String?
-	let shiping : Int?
+	let shiping : String?
 	let total : Int?
 	let status : String?
 

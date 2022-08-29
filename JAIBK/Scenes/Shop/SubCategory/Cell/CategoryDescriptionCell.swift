@@ -18,8 +18,8 @@ class CategoryDescriptionCell: UICollectionViewCell {
         let lbl = UILabel()
         lbl.translatesAutoresizingMaskIntoConstraints = false
         lbl.numberOfLines = 0
-        lbl.text = "Once your car reaches this milestone, there are several systems you will want to have inspected, in addition to the ones listed above, including:"
-        lbl.font = UIFont(name: AppFontName.bold, size: 14)
+        lbl.text = ""
+        lbl.font = UIFont(name: AppFontName.bold, size: 16)
         lbl.textColor = UIColor.hexStringToUIColor(hex: "#000000")
         return lbl
     }()
@@ -27,11 +27,28 @@ class CategoryDescriptionCell: UICollectionViewCell {
         let lbl = UILabel()
         lbl.translatesAutoresizingMaskIntoConstraints = false
         lbl.numberOfLines = 0
-        lbl.text = "Once your car reaches this milestone, there are several systems you will want to have inspected, in addition to the ones listed above, including:"
-        lbl.font = UIFont(name: AppFontName.book, size: 14)
+        lbl.text = ""
+        lbl.font = UIFont(name: AppFontName.book, size: 16)
 
         return lbl
     }()
+    
+    private (set) lazy var productImageView: UIImageView = {[unowned self] in
+        let view = UIImageView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.contentMode = .scaleAspectFill
+        view.clipsToBounds = true
+        view.backgroundColor = .clear
+        view.layer.cornerRadius = 8
+        return view
+    }()
+    
+//    lazy var width: NSLayoutConstraint = {
+//        let width = contentView.widthAnchor.constraint(equalToConstant: bounds.size.width)
+//        width.isActive = true
+//        return width
+//    }()
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
@@ -46,6 +63,11 @@ class CategoryDescriptionCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+//    override func systemLayoutSizeFitting(_ targetSize: CGSize, withHorizontalFittingPriority horizontalFittingPriority: UILayoutPriority, verticalFittingPriority: UILayoutPriority) -> CGSize {
+//        width.constant = bounds.size.width
+//        return contentView.systemLayoutSizeFitting(CGSize(width: targetSize.width, height: 1))
+//    }
+    
     private func loadUIView()  {
         if !containerView.isDescendant(of: contentView) {
             contentView.addSubview(containerView)
@@ -59,7 +81,7 @@ class CategoryDescriptionCell: UICollectionViewCell {
             containerView.addSubview(lblHeading)
         }
         lblHeading.snp.makeConstraints { make in
-            make.top.leading.trailing.equalTo(containerView)
+            make.top.leading.trailing.equalTo(containerView).offset(8)
         }
         if !lblDesc.isDescendant(of: containerView){
             containerView.addSubview(lblDesc)
@@ -67,9 +89,17 @@ class CategoryDescriptionCell: UICollectionViewCell {
         
         lblDesc.snp.makeConstraints { make in
             make.top.equalTo(lblHeading.snp.bottom).offset(8)
-            make.leading.trailing.equalTo(containerView)
+            make.leading.trailing.equalTo(containerView).offset(8)
+        }
+        if !productImageView.isDescendant(of: containerView){
+            containerView.addSubview(productImageView)
         }
         
+        productImageView.snp.makeConstraints { make in
+            make.leading.trailing.equalTo(containerView)
+            make.bottom.equalToSuperview()
+        }
+            
         
     }
 }

@@ -15,7 +15,7 @@ import Foundation
 struct CartData : Codable {
 	let product_id : String?
 	let title : String?
-	let price : String?
+	let price : Int?
 	let image : String?
 	let slug : String?
 	let quantity : String?

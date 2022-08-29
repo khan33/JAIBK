@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SVProgressHUD
 
 class LeftMenuController: UIViewController {
     
@@ -27,13 +28,25 @@ class LeftMenuController: UIViewController {
         return tableView
     }()
     
-    var itemArray = ["Car Parts", "Car fluids", "Car maintenance", "Accessories", "Services", "Request Parts", "Login", "Signup", "My Account", "About", "Blog"]
+    var itemArray = ["Car maintenance", "Accessories", "Services", "Blog", "About", "Contact us", "Login", "Signup"]
     
+    var item2Array = ["Car maintenance", "Accessories", "Services", "Blog", "Request Parts", "Request Part Enquires", "My Account", "About", "Contact us", "Logout"]
     
+    var menuArray: [String] = []
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = .white
+        menuArray.removeAll()
+        menuArray = itemArray
+        
+        if let token = UserDefaults.standard.string(forKey: "token"), token != "" {
+            self.menuArray = self.item2Array
+        } else {
+            self.menuArray = self.itemArray
+        }
+        
         setupViews()
+        tableView.reloadData()
     }
     
     func setupViews() {
@@ -57,15 +70,31 @@ class LeftMenuController: UIViewController {
         }
     }
     
+    private func logout() {
+        SVProgressHUD.show()
+        ServiceManager.shared.sendRequest(request: LogoutRequest(), model: UserModel.self) { result in
+            SVProgressHUD.dismiss()
+            switch result {
+            case .success(let response):
+                DispatchQueue.main.async {
+                    
+                }
+            case .failure(let error):
+                print(error)
+                
+            }
+        }
+    }
+    
 }
 
 extension LeftMenuController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return itemArray.count
+        return menuArray.count
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath as IndexPath) as! MenuCell
-        cell.lblName.text = itemArray[indexPath.row]
+        cell.lblName.text = menuArray[indexPath.row]
         return cell
     }
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -76,22 +105,22 @@ extension LeftMenuController: UITableViewDelegate, UITableViewDataSource {
         //dismissAnimate()
         
         if indexPath.row == 0 {
-            let vc = AddGarageVC()
+            let vc = CarMaintanceVC(parent_id: "0")
             self.navigationController?.pushViewController(vc, animated: true)
         } else if indexPath.row == 1 {
-            let vc = GarageVC()
+            let vc = ShopVC()
             self.navigationController?.pushViewController(vc, animated: true)
         } else if indexPath.row == 2 {
-            let vc = GarageVC()
+            let vc = ContactusViewController()
             self.navigationController?.pushViewController(vc, animated: true)
         } else if indexPath.row == 3 {
-            let vc = AddAddressVC()
+            let vc = BlogVC()
             self.navigationController?.pushViewController(vc, animated: true)
         } else if indexPath.row == 4 {
-            let vc = AddressListVC()
+            let vc = PageViewController()
             self.navigationController?.pushViewController(vc, animated: true)
         } else if indexPath.row == 5 {
-            let vc = FavouriteVC()
+            let vc = PageViewController()
             self.navigationController?.pushViewController(vc, animated: true)
         } else if indexPath.row == 6 {
             let vc = LoginVC() 
@@ -103,8 +132,11 @@ extension LeftMenuController: UITableViewDelegate, UITableViewDataSource {
             let vc = OrdersVC()
             self.navigationController?.pushViewController(vc, animated: true)
         } else if indexPath.row == 9 {
-            let vc = FavouriteVC()
-            self.navigationController?.pushViewController(vc, animated: true)
+            UserDefaults.standard.removeObject(forKey: "token")
+            logout()
+            let viewController = TabBar()
+            UIApplication.shared.windows.first?.rootViewController = viewController
+            UIApplication.shared.windows.first?.makeKeyAndVisible()
         }
         
     }

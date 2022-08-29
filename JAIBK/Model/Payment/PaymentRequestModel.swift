@@ -26,17 +26,11 @@ enum PaymentRequestModel {
             return [
                 "card_nmbr" : card_nmbr,
                 "exp_date": exp_date,
-                
             ]
         }
         
         
-        override var headers: [String : String] {
-            return [
-                "Content-Type" : "application/json",
-                "language_id": "1"
-            ]
-        }
+        
     }
     class DeletePaymentRequest : RequestModel {
         var id: String
@@ -53,12 +47,7 @@ enum PaymentRequestModel {
             return .post
         }
         
-        override var headers: [String : String] {
-            return [
-                "Content-Type" : "application/json",
-                "language_id": "1"
-            ]
-        }
+        
     }
     class UpdatePaymentRequest : RequestModel {
         var card_nmbr: String
@@ -85,16 +74,9 @@ enum PaymentRequestModel {
         }
         
         
-        override var headers: [String : String] {
-            return [
-                "Content-Type" : "application/json",
-                "language_id": "1"
-            ]
-        }
+        
     }
     class PaymentRequest : RequestModel {
-        
-        
         override var path: String {
             return Constant.ServiceConstant.PAYMENT
         }
@@ -103,12 +85,7 @@ enum PaymentRequestModel {
             return .get
         }
         
-        override var headers: [String : String] {
-            return [
-                "Content-Type" : "application/json",
-                "language_id": "1"
-            ]
-        }
+        
     }
     
 }

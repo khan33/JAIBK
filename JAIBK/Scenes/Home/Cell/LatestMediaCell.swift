@@ -42,7 +42,7 @@ class LatestMediaCell: UICollectionViewCell {
             collectionView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
         ])
     }
-    
+    weak var delegate: MediaItemSelectionProtocl?
     var media: [Media]? {
         didSet {
             collectionView.reloadData()
@@ -61,11 +61,16 @@ extension LatestMediaCell: UICollectionViewDelegate, UICollectionViewDataSource,
         return cell
     }
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        
+        let item = media?[indexPath.row]
+        self.delegate?.selectedMeidaItem(item)
     }
     
     func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let width = collectionView.frame.width / 2
         return CGSize(width: width, height: collectionView.frame.height)
     }
+}
+
+protocol MediaItemSelectionProtocl: NSObject {
+    func selectedMeidaItem(_ item: Media?)
 }

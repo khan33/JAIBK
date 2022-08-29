@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SVProgressHUD
 
 class MyAccountVC: UIViewController {
     private (set) lazy var lblUsername: UILabel = {[unowned self] in
@@ -61,9 +62,7 @@ class MyAccountVC: UIViewController {
             MyAccountOptions(title: "Garage", option: nil, indicator: false),
             MyAccountOptions(title: "Payment Method", option: nil, indicator: false),
             MyAccountOptions(title: "Address Book", option: nil, indicator: false),
-            MyAccountOptions(title: "Wishlist", option: nil, indicator: false),
             MyAccountOptions(title: "Lanuage", option: "English", indicator: true),
-            MyAccountOptions(title: "Country", option: "UAE", indicator: true),
             MyAccountOptions(title: "Logout", option: nil, indicator: false)
         ]
         print(itemOptions.count)
@@ -90,6 +89,9 @@ extension MyAccountVC {
             make.centerY.equalTo(imgAvatar.snp.centerY)
             make.leading.equalTo(imgAvatar.snp.trailing).offset(20)
         }
+        
+        let userName = UserDefaults.standard.string(forKey: "userName") ?? ""
+        lblUsername.text = userName
 
         if !lblAccount.isDescendant(of: view) {
             view.addSubview(lblAccount)
@@ -107,6 +109,21 @@ extension MyAccountVC {
             make.leading.equalTo(self.view)
             make.trailing.equalTo(self.view)
             make.bottom.equalTo(self.view)
+        }
+    }
+    private func logout() {
+        SVProgressHUD.show()
+        ServiceManager.shared.sendRequest(request: LogoutRequest(), model: UserModel.self) { result in
+            SVProgressHUD.dismiss()
+            switch result {
+            case .success(let response):
+                DispatchQueue.main.async {
+                    
+                }
+            case .failure(let error):
+                print(error)
+                
+            }
         }
     }
 }
@@ -131,9 +148,11 @@ extension MyAccountVC: UITableViewDelegate, UITableViewDataSource {
                 cell.imgview.isHidden = true
                 cell.lblValue.attributedText = NSAttributedString(string: itemOptions[indexPath.row].option ?? "", attributes: [.underlineStyle: NSUnderlineStyle.single.rawValue])
             }
+            cell.selectionStyle = .none
             return cell
         } else {
             let cell = tableView.dequeueReusableCell(withIdentifier: "connectus", for: indexPath as IndexPath) as! ConnectUsCell
+            cell.selectionStyle = .none
             return cell
         }
     }
@@ -145,7 +164,36 @@ extension MyAccountVC: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        dismissAnimate()
+        if indexPath.section == 0 {
+            if indexPath.row == 0 {
+                let vc = OrdersVC()
+                self.navigationController?.pushViewController(vc, animated: true)
+            } else if indexPath.row == 1 {
+                let vc = EnquireVC()
+                self.navigationController?.pushViewController(vc, animated: true)
+            } else if indexPath.row == 2 {
+                let vc = GarageVC()
+                self.navigationController?.pushViewController(vc, animated: true)
+            } else if indexPath.row == 3 {
+                let vc = PaymentListVC()
+                self.navigationController?.pushViewController(vc, animated: true)
+            } else if indexPath.row == 4 {
+                let vc = AddressListVC()
+                self.navigationController?.pushViewController(vc, animated: true)
+            } else if indexPath.row == 5 {
+                
+            } else if indexPath.row == 6 {
+                UserDefaults.standard.removeObject(forKey: "token")
+                logout()
+                let viewController = TabBar()
+                UIApplication.shared.windows.first?.rootViewController = viewController
+                UIApplication.shared.windows.first?.makeKeyAndVisible()
+            } else if indexPath.row == 7 {
+                
+            }
+        } else {
+            
+        }
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {

@@ -16,7 +16,7 @@ class SliderViewCell: UICollectionViewCell {
         layout.minimumInteritemSpacing = 0
         layout.minimumLineSpacing = 0
         let width = UIScreen.main.bounds.size.width
-        layout.estimatedItemSize = CGSize(width: width, height: 10)
+        layout.estimatedItemSize = CGSize.zero
         let collectionView = UICollectionView(frame: contentView.bounds, collectionViewLayout: layout)
         collectionView.delegate = self
         collectionView.dataSource = self
@@ -37,11 +37,7 @@ class SliderViewCell: UICollectionViewCell {
         page.currentPageIndicatorTintColor = UIColor.black
         return page
     }()
-    lazy var width: NSLayoutConstraint = {
-        let width = contentView.widthAnchor.constraint(equalToConstant: bounds.size.width)
-        width.isActive = true
-        return width
-    }()
+    
     
     
     private var totalImages = 0
@@ -58,10 +54,7 @@ class SliderViewCell: UICollectionViewCell {
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    override func systemLayoutSizeFitting(_ targetSize: CGSize, withHorizontalFittingPriority horizontalFittingPriority: UILayoutPriority, verticalFittingPriority: UILayoutPriority) -> CGSize {
-        width.constant = bounds.size.width
-        return contentView.systemLayoutSizeFitting(CGSize(width: targetSize.width, height: 220))
-    }
+    
     var images: [Product_images]? {
         didSet {
             totalImages = images?.count ?? 0
@@ -99,7 +92,9 @@ extension SliderViewCell: UICollectionViewDelegate, UICollectionViewDataSource, 
         return cell
     }
     
-    
+    func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return CGSize(width: collectionView.frame.width , height: 300)
+    }
     
     func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
         let pageNumber = Int(targetContentOffset.pointee.x / contentView.frame.width)

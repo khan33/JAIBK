@@ -17,9 +17,10 @@ class BlogViewCell: UICollectionViewCell {
     private (set) lazy var imageView: UIImageView = {[unowned self] in
         let view = UIImageView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.contentMode = .scaleAspectFit //.scaleToFill
+        view.contentMode = .scaleAspectFill
         view.clipsToBounds = true
-        view.backgroundColor = .clear // .red
+        view.backgroundColor = .clear
+        view.layer.cornerRadius = 6
         return view
     }()
     
@@ -27,15 +28,16 @@ class BlogViewCell: UICollectionViewCell {
         let lbl = UILabel()
         lbl.translatesAutoresizingMaskIntoConstraints = false
         lbl.numberOfLines = 0
-        lbl.font = .systemFont(ofSize: 12, weight: .regular)
+        lbl.font = UIFont(name: AppFontName.bold, size: 11)
         lbl.text = "Autoline Daily 2021: Top quality news for Aug. 25"
         return lbl
     }()
     
     private (set) lazy var lblDate: UILabel = {[unowned self] in
         let lbl = UILabel()
-        lbl.font = .systemFont(ofSize: 11, weight: .regular)
+        lbl.font = UIFont(name: AppFontName.medium, size: 11)
         lbl.text = "Posted on 10 Feb 2022"
+        lbl.textColor = UIColor.hexStringToUIColor(hex: "#49B7B1")
         return lbl
     }()
     

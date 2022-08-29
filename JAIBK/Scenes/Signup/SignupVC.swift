@@ -50,7 +50,7 @@ class SignupVC: UIViewController, UINavigationControllerDelegate {
     private (set) lazy var lblTitle: UILabel = { [unowned self] in
         var label = UILabel()
         label.textColor =  UIColor.init(red: 34 / 255 , green: 50/255, blue: 99/255, alpha: 1)
-        label.font = .systemFont(ofSize: 16)
+        label.font = UIFont(name: AppFontName.book, size: 16)
         label.text = "Let’s Get Started"
         label.textAlignment = .center
         return label
@@ -60,7 +60,7 @@ class SignupVC: UIViewController, UINavigationControllerDelegate {
     private (set) lazy var areYourLbl: UILabel = { [unowned self] in
         var label = UILabel()
         label.textColor =  UIColor.init(red: 34 / 255 , green: 50/255, blue: 99/255, alpha: 1)
-        label.font = .systemFont(ofSize: 14)
+        label.font = UIFont(name: AppFontName.book, size: 14)
         label.text = "Are you?"
         label.textAlignment = .center
         return label
@@ -218,7 +218,7 @@ extension SignupVC: UIImagePickerControllerDelegate {
         
         image = info[UIImagePickerController.InfoKey.originalImage] as! UIImage
         
-        let jpegCompressionQuality: CGFloat = 0.5 // Set this to whatever suits your purpose
+        let jpegCompressionQuality: CGFloat = 0.3 // Set this to whatever suits your purpose
         
         let imgData = NSData(data: image.jpegData(compressionQuality: jpegCompressionQuality)!)
         var imageSize: Int = imgData.count
@@ -237,11 +237,11 @@ extension SignupVC: UIImagePickerControllerDelegate {
 extension SignupVC {
     fileprivate func setupViews() {
         
-        firstNamtTxt = "Atta"
-        lastNamtTxt = "Khan"
-        emailTxt = "test432@gmail.com"
-        passwordTxt = "admin123"
-        confirmPasswordTxt = "admin123"
+//        firstNamtTxt = "Atta"
+//        lastNamtTxt = "Khan"
+//        emailTxt = "test432@gmail.com"
+//        passwordTxt = "admin123"
+//        confirmPasswordTxt = "admin123"
         
         if !containerView.isDescendant(of: self.view) {
             self.view.addSubview(containerView)
@@ -329,6 +329,7 @@ extension SignupVC {
             guard let self = self else {return}
             self.emailTxt = enteredText
         }
+        emailView.txtField.keyboardType = .emailAddress
         emailView.setData(text: emailTxt)
         stackView.addArrangedSubview(emailView)
 
@@ -415,10 +416,7 @@ extension SignupVC {
                 case .success(let response):
                     DispatchQueue.main.async {
                         if response.success ?? false {
-                            if let data = response.data {
-                                AppUtils.shared.saveUser(user: data)
-                                AppUtils.shared.saveToken(token: data.token ?? "")
-                            }
+                            self.navigationController?.popViewController(animated: true)
                         } else {
                             self.showAlert(withTitle: "Alert", message: response.message ?? "")
                         }
@@ -484,11 +482,7 @@ class SingupRequest : RequestModel {
         ]
     }
     
-    override var headers: [String : String] {
-        return [
-            "Content-Type" : "Application/json",
-        ]
-    }
+    
     
 }
 

@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SVProgressHUD
 
 class AddGarageVC: UIViewController, UINavigationControllerDelegate {
     
@@ -50,15 +51,19 @@ class AddGarageVC: UIViewController, UINavigationControllerDelegate {
     var VINView: EnquireTextFieldView!
     var uplaodImgView: UploadView!
     private var yearTxt: String = ""
+    private var yearIdTxt: String = ""
     private var makeTxt: String = ""
+    private var makeIdTxt: String = ""
     private var modelTxt: String = ""
+    private var modelIdTxt: String = ""
     private var engineTx: String = ""
+    private var engineIdTx: String = ""
     private var titleTxt: String = ""
     private var descTxt: String = ""
     private var platNoTxt: String = ""
     private var colorTxt: String = ""
     private var VinTxt: String = ""
-    
+    private var id: String = ""
     
     var imagePicker: UIImagePickerController!
     var image: UIImage = UIImage()
@@ -77,27 +82,40 @@ class AddGarageVC: UIViewController, UINavigationControllerDelegate {
     private var selectedMakeItem: Int = 0
     private var selectedEngineItem: Int = 0
     
+    private var data: GarageData?
     
+    init(data: GarageData?) {
+        self.data = data
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
+        getOptions()
         configNav()
-        setupViews()
         
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        getOptions()
+        
     }
+    
     private func getOptions() {
+        SVProgressHUD.show()
         ServiceManager.shared.sendRequest(request: DropdownOption(), model: OptionsModel.self) { result in
             switch result {
             case .success(let response):
                 if response.success ?? false {
                     DispatchQueue.main.async {
+                        SVProgressHUD.dismiss()
                         self.years = response.years
                         self.models = response.models
                         self.makes = response.makes
                         self.engines = response.engines
+                        self.showData()
                     }
                 }
             case .failure(let error):
@@ -169,15 +187,47 @@ class AddGarageVC: UIViewController, UINavigationControllerDelegate {
             self.present(imagePicker, animated: true, completion: nil)
         }
     }
+    
+    func showData() {
+        if let data = data {
+            self.yearIdTxt = data.year ?? ""
+            self.makeIdTxt = data.make ?? ""
+            self.engineIdTx = data.engine ?? ""
+            self.modelIdTxt = data.model ?? ""
+            self.titleTxt = data.title ?? ""
+            self.descTxt = data.desc ?? ""
+            self.platNoTxt = data.plate_number ?? ""
+            self.colorTxt = data.color ?? ""
+            self.VinTxt = data.vin_number ?? ""
+            selectedYearItem = years?.firstIndex(where: {$0.year_id == yearIdTxt}) ?? 0
+            selectedMakeItem = makes?.firstIndex(where: { $0.id == makeIdTxt}) ?? 0
+            selectedModelItem = models?.firstIndex(where: { $0.id == modelIdTxt }) ?? 0
+            selectedEngineItem = engines?.firstIndex(where: { $0.id == engineIdTx}) ?? 0
+            self.yearTxt = years?[selectedYearItem].name ?? ""
+            self.makeTxt = makes?[selectedMakeItem].name ?? ""
+            self.engineTx = engines?[selectedEngineItem].name ?? ""
+            self.modelTxt = models?[selectedModelItem].name ?? ""
+            self.id = data.id ?? ""
+        }
+        setupViews()
+        
+    }
 
 }
 extension AddGarageVC {
     fileprivate func setupViews() {
         edgesForExtendedLayout = []
-        selectedYearItem = years?.firstIndex(where: {$0.name == yearTxt}) ?? 0
-        selectedYearItem = makes?.firstIndex(where: { $0.name == makeTxt}) ?? 0
-        selectedModelItem = models?.firstIndex(where: { $0.name == modelTxt }) ?? 0
-        selectedEngineItem = engines?.firstIndex(where: { $0.name == engineTx}) ?? 0
+        
+        
+        
+        
+        selectedYearItem = years?.firstIndex(where: {$0.id == yearIdTxt}) ?? 0
+        selectedYearItem = makes?.firstIndex(where: { $0.id == makeIdTxt}) ?? 0
+        selectedModelItem = models?.firstIndex(where: { $0.id == modelIdTxt }) ?? 0
+        selectedEngineItem = engines?.firstIndex(where: { $0.id == engineIdTx}) ?? 0
+        
+        
+        
         
         
         if !containerView.isDescendant(of: self.view) {
@@ -218,6 +268,7 @@ extension AddGarageVC {
                         }, row: self.selectedYearItem,  didSelect: { (data) in
                             self.yearView?.txtField.text = data.name
                             self.yearTxt = data.name ?? ""
+                            self.yearIdTxt = data.id ?? ""
                             self.selectedYearItem = self.years?.firstIndex(where: {$0.name == self.yearTxt}) ?? 0
                         })
             self.yearView?.txtField.setupPickerField(withDataSource: self.yearDataSource!)
@@ -235,6 +286,7 @@ extension AddGarageVC {
                         }, row: self.selectedMakeItem,  didSelect: { (data) in
                             self.makeView?.txtField.text = data.name
                             self.makeTxt = data.name ?? ""
+                            self.makeIdTxt = data.id ?? ""
                             self.selectedMakeItem = self.makes?.firstIndex(where: {$0.name == self.makeTxt}) ?? 0
                         })
             self.makeView?.txtField.setupPickerField(withDataSource: self.makesDataSource!)
@@ -251,6 +303,7 @@ extension AddGarageVC {
                         }, row: self.selectedModelItem,  didSelect: { (data) in
                             self.modelView?.txtField.text = data.name
                             self.modelTxt = data.name ?? ""
+                            self.modelIdTxt = data.id ?? ""
                             self.selectedModelItem = self.makes?.firstIndex(where: {$0.name == self.makeTxt}) ?? 0
                         })
             self.modelView?.txtField.setupPickerField(withDataSource: self.modelsDataSource!)
@@ -267,6 +320,7 @@ extension AddGarageVC {
                         }, row: self.selectedEngineItem,  didSelect: { (data) in
                             self.engineView?.txtField.text = data.name
                             self.engineTx = data.name ?? ""
+                            self.engineIdTx = data.id ?? ""
                             self.selectedEngineItem = self.makes?.firstIndex(where: {$0.name == self.makeTxt}) ?? 0
                         })
             self.engineView?.txtField.setupPickerField(withDataSource: self.engineDataSource!)
@@ -275,70 +329,99 @@ extension AddGarageVC {
         stackView.addArrangedSubview(engineView)
         
         titleView = EnquireTextFieldView(title: "Title", placeholder: "Title") { text in
+            self.titleTxt = text
         }
+        titleView.setData(text: titleTxt)
         stackView.addArrangedSubview(titleView)
+        
         descView = EnquireTextFieldView(title: "Description", placeholder: "Description") { text in
+            self.descTxt = text
         }
+        descView.setData(text: descTxt)
         stackView.addArrangedSubview(descView)
+        
         uplaodImgView = UploadView(placeholder: "Upload Image View", isPasswordEnable: false, icon: "user") {
             self.uploadSheet()
         }
         
         stackView.addArrangedSubview(uplaodImgView)
         platNumberView = EnquireTextFieldView(title: "Plat Number", placeholder: "Plat number") { text in
+            self.platNoTxt = text
         }
+        platNumberView.txtField.keyboardType = .asciiCapableNumberPad
+        platNumberView.setData(text: platNoTxt)
         stackView.addArrangedSubview(platNumberView)
         
         colorView = EnquireTextFieldView(title: "Color", placeholder: "Colr") { text in
+            self.colorTxt = text
         }
+        colorView.setData(text: colorTxt)
         stackView.addArrangedSubview(colorView)
         
         VINView = EnquireTextFieldView(title: "By Choosing the following", placeholder: "VIN Number") { text in
+            self.VinTxt = text
         }
+        VINView.txtField.keyboardType = .asciiCapableNumberPad
+        VINView.setData(text: VinTxt)
         stackView.addArrangedSubview(VINView)
         
         
         let btnView = CenterButtonView.init(title: "Save") { [weak self] (clicked) in
             guard let self = self else {return}
             if self.yearTxt == "" {
-                self.showAlert(withTitle: "Alert", message: "Enter first name")
+                self.showAlert(withTitle: "Alert", message: "Select Year")
                 return
             }
             if self.makeTxt == "" {
-                self.showAlert(withTitle: "Alert", message: "Enter first name")
+                self.showAlert(withTitle: "Alert", message: "Select Make")
                 return
             }
             if self.modelTxt == "" {
-                self.showAlert(withTitle: "Alert", message: "Enter first name")
+                self.showAlert(withTitle: "Alert", message: "Select Model")
                 return
             }
             if self.engineTx == "" {
-                self.showAlert(withTitle: "Alert", message: "Enter first name")
+                self.showAlert(withTitle: "Alert", message: "Select Engine")
                 return
             }
             if self.titleTxt == "" {
-                self.showAlert(withTitle: "Alert", message: "Enter first name")
+                self.showAlert(withTitle: "Alert", message: "Enter title")
                 return
             }
             if self.descTxt == "" {
-                self.showAlert(withTitle: "Alert", message: "Enter first name")
+                self.showAlert(withTitle: "Alert", message: "Enter description")
                 return
             }
             if self.platNoTxt == "" {
-                self.showAlert(withTitle: "Alert", message: "Enter first name")
+                self.showAlert(withTitle: "Alert", message: "Enter  plat number")
                 return
             }
             if self.colorTxt == "" {
-                self.showAlert(withTitle: "Alert", message: "Enter first name")
+                self.showAlert(withTitle: "Alert", message: "Enter color")
                 return
             }
-            let request = GarageRequestModel.AddGarageRequest(year: self.yearTxt, make: self.makeTxt, model: self.modelTxt, engine: self.engineTx, plate_number: self.platNoTxt, color: self.colorTxt, title: self.titleTxt, desc: self.descTxt, vin_number: self.VinTxt, image: self.base64String)
-            ServiceManager.shared.sendRequest(request: request, model: CityModel.self) { result in
+            if self.VinTxt == "" {
+                self.showAlert(withTitle: "Alert", message: "Enter VIN Number")
+                return
+            }
+            
+            var request: RequestModel?
+            
+            if self.id != "" {
+                 request = GarageRequestModel.UpdateGarageRequest(year: self.yearIdTxt, make: self.makeIdTxt, model: self.modelIdTxt, engine: self.engineIdTx, plate_number: self.platNoTxt, color: self.colorTxt, title: self.titleTxt, desc: self.descTxt, vin_number: self.VinTxt, id: self.id, image: self.base64String)
+            } else {
+                request = GarageRequestModel.AddGarageRequest(year: self.yearIdTxt, make: self.makeIdTxt, model: self.modelIdTxt, engine: self.engineIdTx, plate_number: self.platNoTxt, color: self.colorTxt, title: self.titleTxt, desc: self.descTxt, vin_number: self.VinTxt, image: self.base64String)
+            }
+                
+                
+            ServiceManager.shared.sendRequest(request: request!, model: GarageModel.self) { result in
                 switch result {
                 case .success(let response):
                     if response.success ?? false {
                         DispatchQueue.main.async {
-                            
+                            self.showAlertOkAction(withTitle: "Alert", message: response.message ?? "New car added successfully.") {
+                                self.navigationController?.popViewController(animated: true)
+                            }
                         }
                     }
                 case .failure(let error):
@@ -357,13 +440,13 @@ extension AddGarageVC: UIImagePickerControllerDelegate {
         imagePicker.dismiss(animated: true, completion: nil)
         image = info[UIImagePickerController.InfoKey.originalImage] as! UIImage
         
-        let jpegCompressionQuality: CGFloat = 0.5 // Set this to whatever suits your purpose
+        let jpegCompressionQuality: CGFloat = 0.3 // Set this to whatever suits your purpose
         
         let imgData = NSData(data: image.jpegData(compressionQuality: jpegCompressionQuality)!)
         var imageSize: Int = imgData.count
         print("actual size of image in KB: %f ", Double(imageSize) / 1000.0)
         if let string = image.jpegData(compressionQuality: jpegCompressionQuality)?.base64EncodedString() {
-            base64String = string
+            base64String = "data:image/jpeg;base64,\(string)"
         }
     }
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {

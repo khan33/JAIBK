@@ -47,15 +47,24 @@ class AddEnquireVC: UIViewController {
     var enterMessageView: MessageTextField!
     
     
-    private var productIdTxt: String = "14"
-    private var productNameTxt: String = "Eng product"
+    private var productIdTxt: String = ""
+    private var productNameTxt: String = ""
     private var firstNameTxt: String = ""
     private var lastNameTxt: String = ""
     private var emailTxt: String = ""
     private var phoneNoTxt: String = ""
     private var messageTxt: String = ""
     private var quantityTxt: String = ""
+    var product: Products?
     
+    init(product: Products?) {
+        self.product = product
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
         configNav()
@@ -96,13 +105,6 @@ class AddEnquireVC: UIViewController {
 extension AddEnquireVC {
     fileprivate func setupViews() {
         edgesForExtendedLayout = []
-        quantityTxt = "5"
-        firstNameTxt = "Noman"
-        lastNameTxt = "Aslam"
-        emailTxt = "noman@gmail.com"
-        phoneNoTxt = "83983043"
-        messageTxt = "some test goes here....some test goes here....some test goes here....some test goes here...."
-        
         
         if !containerView.isDescendant(of: self.view) {
             self.view.addSubview(containerView)
@@ -134,6 +136,7 @@ extension AddEnquireVC {
             make.leading.trailing.equalToSuperview().inset(8)
             make.bottom.equalToSuperview()
         }
+        productNameTxt = product?.title ?? ""
         productInfoView = EnquireTextFieldView(title: "Product Info", placeholder: "Product Id") { text in
             self.productNameTxt = text
         }
@@ -145,6 +148,7 @@ extension AddEnquireVC {
         quantity = EnquireTextFieldView(title: "Quantity", placeholder: "") { text in
             self.quantityTxt = text
         }
+        quantity.txtField.keyboardType = .asciiCapableNumberPad
         quantity.setData(text: quantityTxt)
         stackView.addArrangedSubview(quantity)
         
@@ -165,11 +169,14 @@ extension AddEnquireVC {
         emailView = EnquireTextFieldView(title: "Email", placeholder: "") { text in
             self.emailTxt = text
         }
+        emailView.txtField.keyboardType = .emailAddress
+
         emailView.setData(text: emailTxt)
         stackView.addArrangedSubview(emailView)
         phoneNoView = EnquireTextFieldView(title: "Phone Number", placeholder: "") { text in
             self.phoneNoTxt = text
         }
+        phoneNoView.txtField.keyboardType = .asciiCapableNumberPad
         phoneNoView.setData(text: phoneNoTxt)
         stackView.addArrangedSubview(phoneNoView)
         
@@ -215,13 +222,15 @@ extension AddEnquireVC {
                 return
             }
             print(self.messageTxt)
-            let addRequest = EnquireRequestModel.AddEnquireRequest(id: self.productIdTxt, name: self.productNameTxt, quantity: self.quantityTxt, first_name: self.firstNameTxt, last_name: self.lastNameTxt, email: self.emailTxt, phone: self.emailTxt, message: self.messageTxt)
+            let addRequest = EnquireRequestModel.AddEnquireRequest(id: self.product?.product_id ?? "", name: self.productNameTxt, quantity: self.quantityTxt, first_name: self.firstNameTxt, last_name: self.lastNameTxt, email: self.emailTxt, phone: self.emailTxt, message: self.messageTxt)
             ServiceManager.shared.sendRequest(request: addRequest, model: EnquireModel.self) { result in
                 switch result {
                 case .success(let response):
                     DispatchQueue.main.async {
                         if response.success ?? false {
-                            self.showAlert(withTitle: "Alert", message: response.message ?? "")
+                            self.showAlertOkAction(withTitle: "Alert", message: response.message ?? "Enquiry added successfully.") {
+                                self.navigationController?.popViewController(animated: true)
+                            }
                         } else {
                             self.showAlert(withTitle: "Alert", message: response.message ?? "")
                         }

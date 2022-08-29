@@ -44,6 +44,11 @@ class HomeVC: UIViewController {
         super.viewDidLoad()
         self.view.backgroundColor = .white
         
+        if !isAppAlreadyLaunchedOnce() {
+            getSessionId()
+        }
+        
+        
         navigationController?.navigationBar.titleTextAttributes = [
             .foregroundColor: UIColor.black,
             .font: UIFont(name: "GothamNarrow-Medium", size: 20)!
@@ -62,6 +67,18 @@ class HomeVC: UIViewController {
         getHomeProducts()
     }
     
+    func isAppAlreadyLaunchedOnce() -> Bool {
+        let defaults = UserDefaults.standard
+        if defaults.bool(forKey: "isAppAlreadyLaunchedOnce"){
+            print("App already launched : \(isAppAlreadyLaunchedOnce)")
+            return true
+        }else{
+            defaults.set(true, forKey: "isAppAlreadyLaunchedOnce")
+            print("App launched first time")
+            
+            return false
+        }
+    }
     
     private func configCollectionView() {
         collectionViewHome.reloadData()
@@ -91,7 +108,22 @@ class HomeVC: UIViewController {
         }
     }
     
-    
+    private func getSessionId() {
+        SVProgressHUD.show()
+        ServiceManager.shared.sendRequest(request: SessionRequest(), model: SessionModel.self) { result in
+            SVProgressHUD.dismiss()
+            switch result {
+            case .success(let response):
+                DispatchQueue.main.async {
+                    let session_id = response.session_id
+                    UserDefaults.standard.set(session_id ?? "", forKey: "session_id")
+                }
+            case .failure(let error):
+                print(error)
+                
+            }
+        }
+    }
     
     @objc func didTapHomeButton(sender: AnyObject){
         
@@ -102,11 +134,23 @@ class HomeVC: UIViewController {
         self.navigationController?.pushViewController(vc, animated: false)
     }
     
+    
+    @objc func didTapOnAllMediaBtn(_ sender: UIButton) {
+        if let media = media {
+            let vc = AllMediaViewController(media: media)
+            navigationController?.pushViewController(vc, animated: true)
+        }
+    }
     @objc func didTapOnAllViewBtn(_ sender: UIButton) {
         if let product = products {
             let vc = ProductsVC(products: product)
             navigationController?.pushViewController(vc, animated: true)
         }
+    }
+    
+    @objc func didTapOnContactUsBtn(_ sender: UIButton) {
+        let vc = ContactusViewController()
+        self.navigationController?.pushViewController(vc, animated: true)
     }
 }
 
@@ -161,6 +205,7 @@ extension HomeVC: UICollectionViewDataSource, UICollectionViewDelegate, UICollec
         } else if indexPath.section == 1 {
             let cell = collectionView.dequeueReusableCell(with: ProductSlider.self, for: indexPath)
             cell.categories = categories
+            cell.delegate = self
             return cell
         } else if indexPath.section == 2 {
             let cell = collectionView.dequeueReusableCell(with: ViewAllCell.self, for: indexPath)
@@ -174,23 +219,28 @@ extension HomeVC: UICollectionViewDataSource, UICollectionViewDelegate, UICollec
         } else if indexPath.section == 5 {
             let cell = collectionView.dequeueReusableCell(with: ViewAllCell.self, for: indexPath)
             cell.lblName.text = "Latest Media"
+            cell.AllViewBtn.addTarget(self, action: #selector(didTapOnAllMediaBtn), for: .touchUpInside)
             return cell
         }
         else if indexPath.section == 6 {
             let cell = collectionView.dequeueReusableCell(with: LatestMediaCell.self, for: indexPath)
+            cell.delegate = self
             cell.media = self.media
             return cell
         }
         else {
             let cell = collectionView.dequeueReusableCell(with: EnquireNowCell.self, for: indexPath)
             cell.lblName.text = self.preference?.enquire_title
-            cell.lblAllView.text = self.preference?.enquire_b_text
+            cell.lblAllView.text = "Contact Us"//self.preference?.enquire_b_text
             if let img = preference?.home_page_enquire_pic
             {
                 let urlString = Constant.baseURL + "images/home/" + img.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
                 cell.imageView.sd_setImage(with: URL(string: urlString), placeholderImage: UIImage(named: "item"))
                 cell.imageView.layer.cornerRadius = 15
             }
+            
+            cell.AllViewBtn.addTarget(self, action: #selector(didTapOnContactUsBtn), for: .touchUpInside)
+
             return cell
         }
     }
@@ -230,4 +280,32 @@ extension HomeVC: UICollectionViewDataSource, UICollectionViewDelegate, UICollec
         }
     }
     
+}
+
+
+extension HomeVC: SubCategoryProtocol {
+    func checkSubCategory(categories: Categories?) {
+        let check_sub_category = categories?.check_sub_category ?? false
+        if check_sub_category {
+            if let id = categories?.category_id {
+                let vc = SubCategoryVC(parent_id: id)
+                self.navigationController?.pushViewController(vc, animated: true)
+            }
+        } else {
+            if let id = categories?.category_id {
+                let vc = CategoryDetailVC(id: id)
+                self.navigationController?.pushViewController(vc, animated: false)
+            }
+        }
+    }
+}
+
+
+extension HomeVC: MediaItemSelectionProtocl {
+    func selectedMeidaItem(_ item: Media?) {
+        if let item = item {
+            let vc = MediaDetailVC(media: item)
+            self.navigationController?.pushViewController(vc, animated: true)
+        }
+    }
 }

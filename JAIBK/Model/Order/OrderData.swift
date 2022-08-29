@@ -14,7 +14,7 @@ For support, please feel free to contact me at https://www.linkedin.com/in/syeda
 import Foundation
 struct OrderData : Codable {
 	let order_id : String?
-	let price : String?
+	let price : Int?
 	let added_on : String?
 	let items : Int?
 	let status : String?

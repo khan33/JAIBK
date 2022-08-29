@@ -16,10 +16,10 @@ struct CartModel : Codable {
 	let success : Bool?
 	let data : [CartData]?
 	let count_item : Int?
-	let sub_total : String?
+	let sub_total : Int?
 	let shipig : Int?
 	let total : Int?
-	let address : [String]?
+	let address : [AddressData]?
 
 	enum CodingKeys: String, CodingKey {
 

@@ -18,10 +18,9 @@ class SliderCell: UICollectionViewCell {
     private (set) lazy var productImageView: UIImageView = {[unowned self] in
         let view = UIImageView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.contentMode = .scaleAspectFit
         view.clipsToBounds = true
-        view.backgroundColor = .clear
-        view.image = UIImage(named: "image 29")
+//        view.backgroundColor = .clear
+//        view.image = UIImage(named: "image 29")
         return view
     }()
     lazy var width: NSLayoutConstraint = {
@@ -49,22 +48,28 @@ class SliderCell: UICollectionViewCell {
         return contentView.systemLayoutSizeFitting(CGSize(width: targetSize.width, height: 1))
     }
     private func loadUIView()  {
+        
         if !containerView.isDescendant(of: contentView) {
             contentView.addSubview(containerView)
         }
         containerView.snp.makeConstraints { make in
-            //make.edges.equalToSuperview()
-            make.leading.trailing.equalToSuperview().inset(16)
-//            make.width.equalToSuperview().inset(8)
-            make.height.equalToSuperview()
+            make.edges.equalToSuperview()
         }
         
         if !productImageView.isDescendant(of: containerView){
             containerView.addSubview(productImageView)
         }
+        
         productImageView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
+            make.leading.equalToSuperview().offset(20)
+            make.top.equalToSuperview().offset(10)
+            make.centerX.equalToSuperview()
+            make.centerY.equalToSuperview()
+            make.height.equalTo(210)
+            make.width.equalTo(containerView).multipliedBy(0.9)
+            
         }
+        productImageView.contentMode = .scaleAspectFill
     }
     
 }

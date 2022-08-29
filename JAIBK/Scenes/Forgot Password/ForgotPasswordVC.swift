@@ -165,11 +165,7 @@ class ForgotPasswordRequest : RequestModel {
         ]
     }
     
-    override var headers: [String : String] {
-        return [
-            "Content-Type" : "Application/json",
-        ]
-    }
+    
     
     override var method: RequestHTTPMethod {
         return .post

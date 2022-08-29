@@ -21,7 +21,7 @@ class CheckboxView: UIView {
         lbl.numberOfLines = 0
         lbl.textAlignment = .left
         lbl.textColor =  .hexStringToUIColor(hex: "#49B7B1")
-        lbl.font = .systemFont(ofSize: 14)
+        lbl.font = UIFont(name: AppFontName.bold, size: 16)
         lbl.translatesAutoresizingMaskIntoConstraints = false
         lbl.clipsToBounds = true
         return lbl

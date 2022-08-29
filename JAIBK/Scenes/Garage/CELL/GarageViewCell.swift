@@ -16,8 +16,9 @@ class GarageViewCell: UICollectionViewCell {
     }()
     private (set) lazy var imgCoverView: UIView = { [unowned self] in
         let view = UIView()
-        view.backgroundColor = .gray
+        view.backgroundColor = UIColor.hexStringToUIColor(hex: "#D6D6D6")
         view.clipsToBounds = true
+        view.layer.cornerRadius = 6
         return view
     }()
     
@@ -69,9 +70,9 @@ class GarageViewCell: UICollectionViewCell {
     private (set) lazy var editBtn: UIButton = { [unowned self] in
         let btn = UIButton()
         btn.setTitle("Edit", for: .normal)
-        btn.setImage(UIImage(named: "remove"), for: .normal)
+        btn.setImage(UIImage(systemName: "square.and.pencil"), for: .normal)
         btn.setTitleColor(UIColor.hexStringToUIColor(hex: "#49B7B1"), for: .normal)
-        btn.titleLabel?.font = UIFont(name: AppFontName.bold, size: 12)
+        btn.titleLabel?.font = UIFont(name: AppFontName.bold, size: 14)
         btn.contentHorizontalAlignment = .left
         return btn
     }()

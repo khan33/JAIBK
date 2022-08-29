@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SVProgressHUD
 
 class SubCategoryVC: UIViewController {
     private (set) lazy var collectionViewHome:UICollectionView = { [unowned self] in
@@ -40,7 +41,6 @@ class SubCategoryVC: UIViewController {
         super.viewDidLoad()
         configNav()
         setupViews()
-        print(parent_id)
         getSubCategories()
     }
     
@@ -57,7 +57,9 @@ class SubCategoryVC: UIViewController {
     }
     
     private func getSubCategories() {
+        SVProgressHUD.show()
         ServiceManager.shared.sendRequest(request: SubCategoryRequest(id: parent_id), model: CategoryModel.self) { result in
+            SVProgressHUD.dismiss()
             switch result {
             case .success(let response):
                 if response.success ?? false {
@@ -148,12 +150,7 @@ class SubCategoryRequest : RequestModel {
     override var path: String {
         return Constant.ServiceConstant.SUB_CATEGORIES
     }
-    override var headers: [String : String] {
-        return [
-            "Content-Type" : "application/json",
-            "language_id": "1"
-        ]
-    }
+    
     override var parameters: [String: Any?] {
         return ["parent_id": id]
     }

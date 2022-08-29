@@ -115,9 +115,9 @@ class ShippingViewCell: UICollectionViewCell {
     var shipping: ShippingData? {
         didSet {
             guard let data = shipping else { return }
-            statusView.lblValue.text = data.shiping
+            statusView.lblValue.text = data.date_shiping
             addressView.lblValue.text = data.address
-            shippingStatusView.lblValue.text = data.date_shiping
+            shippingStatusView.lblValue.text = data.shiping
         }
     }
 }

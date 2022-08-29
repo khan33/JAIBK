@@ -19,10 +19,5 @@ class ProductDetailRequest : RequestModel {
     }
     
    
-    override var headers: [String : String] {
-        return [
-            "Content-Type" : "application/json",
-            "language_id": "1"
-        ]
-    }
+    
 }

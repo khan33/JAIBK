@@ -21,13 +21,11 @@ extension UserDefaults {
     
     static func removeAllKeysValues() {
         let sessionID = AppUtils.shared.sessionID
-
         let defaults = UserDefaults.standard
         let dictionary = defaults.dictionaryRepresentation()
         dictionary.keys.forEach { key in
             defaults.removeObject(forKey: key)
         }
-        
         AppUtils.shared.sessionID = sessionID
     }
     

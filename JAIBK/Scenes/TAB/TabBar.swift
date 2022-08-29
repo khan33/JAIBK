@@ -41,23 +41,37 @@ class TabBar: UITabBarController {
         let vc2 = ShopVC()
         let vc3 = EnquireVC()
         let vc4 = CartVC()
-        let vc5 = MyAccountVC()
 
+        
         vc1.tabBarItem = tabOneBarItem
         vc2.tabBarItem = tabTwoBarItem
         vc3.tabBarItem = tabThreeBarItem
         vc4.tabBarItem = tabFourBarItem
-        vc5.tabBarItem = tabFiveBarItem
+        
         
         let v1 = UINavigationController(rootViewController: vc1)
         let v2 = UINavigationController(rootViewController: vc2)
         let v3 = UINavigationController(rootViewController: vc3)
         let v4 = UINavigationController(rootViewController: vc4)
-        let v5 = UINavigationController(rootViewController: vc5)
+        
+        if let token = UserDefaults.standard.string(forKey: "token"), token != "" {
+            let vc5 = MyAccountVC()
+            vc5.tabBarItem = tabFiveBarItem
+            let v5 = UINavigationController(rootViewController: vc5)
+            self.viewControllers = [v1, v2, v3, v4, v5]
+            self.selectedIndex = 0
+        } else {
+            let vc5 = LoginVC()
+            vc5.tabBarItem = tabFiveBarItem
+            let v5 = UINavigationController(rootViewController: vc5)
+            self.viewControllers = [v1, v2, v3, v4, v5]
+            self.selectedIndex = 0
+        }
+        
+        
+       
     
-    
-        self.viewControllers = [v1, v2, v3, v4, v5]
-        self.selectedIndex = 0
+        
     
     }
     

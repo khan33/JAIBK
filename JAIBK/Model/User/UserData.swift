@@ -13,34 +13,11 @@ For support, please feel free to contact me at https://www.linkedin.com/in/syeda
 
 import Foundation
 struct UserData : Codable {
-	let firstname : String?
-	let lastname : String?
-	let email : String?
-	let password : String?
-	let confirm_password : String?
-	let user_type : String?
-	let company : String?
-	let seller_img : String?
-	let role : String?
-	let verificationcode : Int?
-	let image : String?
-	let usr_type : String?
-	let token : String?
-
-	enum CodingKeys: String, CodingKey {
-
-		case firstname = "firstname"
-		case lastname = "lastname"
-		case email = "email"
-		case password = "password"
-		case confirm_password = "confirm_password"
-		case user_type = "user_type"
-		case company = "company"
-		case seller_img = "seller_img"
-		case role = "role"
-		case verificationcode = "verificationcode"
-		case image = "image"
-		case usr_type = "usr_type"
-		case token = "token"
-	}
+    let token : String?
+    let user : User?
+    enum CodingKeys: String, CodingKey {
+        case token = "token"
+        case user = "user"
+    }
 }
+

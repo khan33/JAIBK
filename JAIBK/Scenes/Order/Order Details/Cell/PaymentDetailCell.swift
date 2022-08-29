@@ -30,9 +30,9 @@ class PaymentDetailCell: UICollectionViewCell {
     }()
     
     
-    private var shippingView: PreviewKeyValueView!
-    private var itemsView: PreviewKeyValueView!
-    private var priceView: PreviewKeyValueView!
+    var shippingView: PreviewKeyValueView!
+    var itemsView: PreviewKeyValueView!
+    var priceView: PreviewKeyValueView!
     
     
     override func awakeFromNib() {
@@ -111,6 +111,7 @@ class PaymentDetailCell: UICollectionViewCell {
     var data: OrderDetailModel? {
         didSet {
             guard let item = data else { return }
+            itemsView.lblHeading.text = "Items(\(item.total_items!))"
             itemsView.lblValue.text = "\(item.total_items!) Items purchased"
             priceView.lblValue.text = "AED \(item.total!)"
             shippingView.lblValue.text = "\(item.shiping!)"

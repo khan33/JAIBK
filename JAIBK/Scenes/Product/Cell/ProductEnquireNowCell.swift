@@ -31,7 +31,7 @@ class ProductEnquireNowCell: UICollectionViewCell {
         btn.backgroundColor = UIColor.hexStringToUIColor(hex: "#49B7B1")
         btn.setTitle("Enquire Now", for: .normal)
         btn.setTitleColor(UIColor.white, for: .normal)
-        btn.layer.cornerRadius = 8
+        btn.layer.cornerRadius = 6
         return btn
         
     }()
@@ -85,7 +85,7 @@ class ProductEnquireNowCell: UICollectionViewCell {
         }
         enquireNowBtn.snp.remakeConstraints { make in
             make.top.bottom.trailing.equalToSuperview().inset(16)
-            make.width.equalTo(containerView).multipliedBy(0.3)
+            make.width.equalTo(containerView).multipliedBy(0.4)
         }
         
     }

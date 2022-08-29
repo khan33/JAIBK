@@ -40,10 +40,17 @@ class EnquireNowCell: UICollectionViewCell {
         lbl.translatesAutoresizingMaskIntoConstraints = false
         lbl.numberOfLines = 1
         lbl.text = "Enquire Now"
-        lbl.font = UIFont(name: AppFontName.medium, size: 11)
+        lbl.font = UIFont(name: AppFontName.bold, size: 13)
         lbl.textColor = .white
         lbl.textAlignment = .center
         return lbl
+    }()
+    
+    private (set) lazy var AllViewBtn: UIButton = {[unowned self] in
+        let button = UIButton()
+        button.setTitle("", for: .normal)
+        button.backgroundColor = .clear
+        return button
     }()
     
     override func awakeFromNib() {
@@ -101,6 +108,13 @@ class EnquireNowCell: UICollectionViewCell {
         lblAllView.snp.makeConstraints { make in
             make.centerX.equalTo(imageView.snp.centerX)
             make.top.equalTo(lblName.snp.bottom).offset(8)
+        }
+        
+        if !AllViewBtn.isDescendant(of: containerView) {
+            containerView.addSubview(AllViewBtn)
+        }
+        AllViewBtn.snp.makeConstraints { make in
+            make.top.leading.trailing.bottom.equalTo(lblAllView)
         }
     }
 }

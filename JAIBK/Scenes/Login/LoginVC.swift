@@ -50,7 +50,7 @@ class LoginVC: UIViewController {
     private (set) lazy var lblTitle: UILabel = { [unowned self] in
         var label = UILabel()
         label.textColor =  UIColor.init(red: 34 / 255 , green: 50/255, blue: 99/255, alpha: 1)
-        label.font = .systemFont(ofSize: 16)
+        label.font = UIFont(name: AppFontName.book, size: 16)
         label.text = "Let’s Get Started"
         label.textAlignment = .center
         return label
@@ -72,6 +72,7 @@ class LoginVC: UIViewController {
         btn.backgroundColor = .clear
         btn.addTarget(self, action: #selector(didTapOnForgotPasswrodBtn), for: .touchUpInside)
         btn.contentHorizontalAlignment = .right
+        btn.titleLabel?.font = UIFont(name: AppFontName.bold, size: 16)
         return btn
     }()
     
@@ -117,7 +118,7 @@ class LoginVC: UIViewController {
 extension LoginVC {
     fileprivate func setupViews() {
         
-        emailTxt = "abcd@gmail.com"
+        emailTxt = "awan@gmail.com"
         passwordTxt = "admin123"
         
         if !containerView.isDescendant(of: self.view) {
@@ -176,6 +177,9 @@ extension LoginVC {
         
         
         let btnView = CenterButtonView.init(title: "Login") { [weak self] (clicked) in
+            
+            
+            
             guard let self = self else {return}
             if self.emailTxt == "" {
                 self.showAlert(withTitle: "Alert", message: "Enter your email.")
@@ -194,10 +198,13 @@ extension LoginVC {
                     DispatchQueue.main.async {
                         if response.success ?? false {
                             if let data = response.data {
-                                AppUtils.shared.saveUser(user: data) //Save User
-                                AppUtils.shared.saveToken(token: data.token ?? "") //Save Token
-                                //self.navigationController?.popViewController(animated: true)
                                 
+                                UserDefaults.standard.set(data.user?.userName, forKey: "userName")
+                                UserDefaults.standard.set(data.token ?? "", forKey: "token")
+                                
+                                let viewController = TabBar()
+                                UIApplication.shared.windows.first?.rootViewController = viewController
+                                UIApplication.shared.windows.first?.makeKeyAndVisible()
                             }
                             
                         } else {
@@ -238,10 +245,20 @@ class LoginRequest : RequestModel {
         ]
     }
     
-    override var headers: [String : String] {
-        return [
-            "Content-Type" : "Application/json",
-        ]
+    
+    
+    override var method: RequestHTTPMethod {
+        return .post
+    }
+    
+}
+
+
+class LogoutRequest : RequestModel {
+    
+    
+    override var path: String {
+        return Constant.ServiceConstant.LOGOUT
     }
     
     override var method: RequestHTTPMethod {

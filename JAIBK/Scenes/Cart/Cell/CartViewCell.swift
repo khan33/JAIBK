@@ -16,7 +16,7 @@ class CartViewCell: UICollectionViewCell {
     }()
     private (set) lazy var imgCoverView: UIView = { [unowned self] in
         let view = UIView()
-        view.backgroundColor = .gray
+        view.backgroundColor = UIColor.hexStringToUIColor(hex: "#EFEFEF")
         view.clipsToBounds = true
         return view
     }()
@@ -34,8 +34,8 @@ class CartViewCell: UICollectionViewCell {
         let lbl = UILabel()
         lbl.translatesAutoresizingMaskIntoConstraints = false
         lbl.numberOfLines = 2
-        lbl.text = "Brake caliper grease niglube"
-        lbl.font = UIFont(name: AppFontName.bold, size: 13)
+        lbl.text = ""
+        lbl.font = UIFont(name: AppFontName.bold, size: 11)
         lbl.textColor = UIColor.hexStringToUIColor(hex: "#000000")
         return lbl
     }()
@@ -43,7 +43,7 @@ class CartViewCell: UICollectionViewCell {
         let lbl = UILabel()
         lbl.translatesAutoresizingMaskIntoConstraints = false
         lbl.numberOfLines = 1
-        lbl.text = "Brand Name here"
+        lbl.text = ""
         lbl.font = UIFont(name: AppFontName.book, size: 10)
         lbl.textColor = UIColor.hexStringToUIColor(hex: "#4F4F4F")
         return lbl
@@ -52,7 +52,7 @@ class CartViewCell: UICollectionViewCell {
         let lbl = UILabel()
         lbl.translatesAutoresizingMaskIntoConstraints = false
         lbl.numberOfLines = 1
-        lbl.text = "160.00"
+        lbl.text = ""
         lbl.font = UIFont(name: AppFontName.book, size: 12)
         lbl.textColor = UIColor.hexStringToUIColor(hex: "#49B7B1")
         return lbl
@@ -102,7 +102,7 @@ class CartViewCell: UICollectionViewCell {
         return view
     }()
     
-    
+    var quantity: Int = 1
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -111,6 +111,7 @@ class CartViewCell: UICollectionViewCell {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        quantityTxtField.isUserInteractionEnabled = false
         loadUIView()
         
     }
@@ -153,6 +154,7 @@ class CartViewCell: UICollectionViewCell {
         }
         lblProductName.snp.makeConstraints { (make) -> Void in
             make.leading.equalTo(imgCoverView.snp.trailing).offset(16)
+            make.trailing.equalToSuperview().inset(40)
             make.top.equalTo(imgCoverView.snp.top).offset(8)
         }
         
@@ -177,6 +179,7 @@ class CartViewCell: UICollectionViewCell {
         removeBtn.snp.makeConstraints { (make) -> Void in
             make.trailing.equalTo(containerView.snp.trailing).offset(-16)
             make.top.equalTo(imgCoverView.snp.top).offset(8)
+            make.height.width.equalTo(21)
         }
         
         if !stackView.isDescendant(of: containerView) {
@@ -188,4 +191,24 @@ class CartViewCell: UICollectionViewCell {
             make.width.equalTo(120)
         }
     }
+    
+    var product: CartData? {
+        didSet {
+            guard let item = product else { return }
+            lblProductName.text = item.title
+            lblBrandName.text = item.brand_name
+            
+            lblPrice.text = "AED \(String(describing: item.price!))"
+            
+            if let img = item.image {
+                productImageView.sd_setImage(with: URL(string: Constant.baseURL + "images/products/" + img), placeholderImage: UIImage(named: "item"))
+            }
+            
+            quantityTxtField.text = item.quantity
+            
+        }
+    }
+    
+    
+    
 }

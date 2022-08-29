@@ -29,3 +29,11 @@ struct HomeModel : Codable {
 	}
 
 }
+
+struct SessionModel: Codable {
+    let session_id: String?
+    
+    enum CodingKeys: String, CodingKey {
+        case session_id = "session_id"
+    }
+}

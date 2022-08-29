@@ -24,7 +24,7 @@ class EnquireCell: UICollectionViewCell {
         lbl.numberOfLines = 1
         lbl.font = UIFont(name: AppFontName.bold, size: 19)
         lbl.textColor = .white
-        lbl.text = "2139824"
+        lbl.text = ""
         return lbl
     }()
     
@@ -34,7 +34,7 @@ class EnquireCell: UICollectionViewCell {
         lbl.numberOfLines = 0
         lbl.font = UIFont(name: AppFontName.book, size: 14)
         lbl.textColor = .white
-        lbl.text = "I need this product ..."
+        lbl.text = ""
         return lbl
     }()
     
@@ -42,7 +42,7 @@ class EnquireCell: UICollectionViewCell {
         let lbl = UILabel()
         lbl.font = UIFont(name: AppFontName.book, size: 13)
         lbl.textColor = .white
-        lbl.text = "24 July 2021"
+        lbl.text = ""
         return lbl
     }()
     private (set) lazy var lblStatus: UILabel = {[unowned self] in
@@ -91,17 +91,17 @@ class EnquireCell: UICollectionViewCell {
             contentView.addSubview(containerView)
         }
         containerView.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(contentView.snp.top).offset(20)
+            make.top.equalTo(contentView.snp.top).offset(8)
             make.leading.equalTo(contentView.snp.leading).offset(20)
             make.trailing.equalTo(contentView.snp.trailing).offset(-20)
-            make.bottom.equalTo(contentView.snp.bottom).offset(-20)
+            make.bottom.equalTo(contentView.snp.bottom).offset(-8)
         }
         
         if !lblProductId.isDescendant(of: containerView) {
             containerView.addSubview(lblProductId)
         }
         lblProductId.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(containerView.snp.top).offset(20)
+            make.top.equalTo(containerView.snp.top).offset(16)
             make.leading.equalTo(containerView.snp.leading).offset(20)
         }
         
@@ -109,7 +109,7 @@ class EnquireCell: UICollectionViewCell {
             containerView.addSubview(lblDate)
         }
         lblDate.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(containerView.snp.top).offset(20)
+            make.top.equalTo(containerView.snp.top).offset(16)
             make.trailing.equalTo(containerView.snp.trailing).inset(20)
         }
         
@@ -117,7 +117,7 @@ class EnquireCell: UICollectionViewCell {
             containerView.addSubview(lblDesc)
         }
         lblDesc.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(lblProductId.snp.bottom).offset(20)
+            make.top.equalTo(lblProductId.snp.bottom).offset(16)
             make.leading.equalTo(containerView.snp.leading).offset(20)
             make.trailing.equalTo(containerView.snp.trailing).offset(-20)
         }
@@ -138,7 +138,7 @@ class EnquireCell: UICollectionViewCell {
             containerView.addSubview(lblStatus)
         }
         lblStatus.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(dottedView.snp.bottom).offset(20)
+            make.top.equalTo(dottedView.snp.bottom).offset(16)
             make.leading.equalTo(containerView.snp.leading).offset(20)
         }
         
@@ -146,7 +146,7 @@ class EnquireCell: UICollectionViewCell {
             containerView.addSubview(lblStatusValue)
         }
         lblStatusValue.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(dottedView.snp.bottom).offset(20)
+            make.top.equalTo(dottedView.snp.bottom).offset(16)
             make.trailing.equalTo(containerView.snp.trailing).offset(-20)
         }
     }
@@ -155,7 +155,7 @@ class EnquireCell: UICollectionViewCell {
     var enquire: EnquireData? {
         didSet {
             guard let data = enquire else { return }
-            lblProductId.text = data.product_id
+            lblProductId.text = data.id
             lblDesc.text = data.message
             lblDate.text = data.added_on
             lblStatusValue.text = data.status

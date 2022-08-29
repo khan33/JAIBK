@@ -16,7 +16,6 @@ class ProductCell: UICollectionViewCell {
         return view
     }()
     
-    
     private (set) lazy var imageContainerView: UIView = {[unowned self] in
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -24,6 +23,7 @@ class ProductCell: UICollectionViewCell {
         view.layer.cornerRadius = 8
         view.layer.borderColor = UIColor.gray.cgColor
         view.layer.borderWidth = 1.0
+        
         return view
     }()
     
@@ -110,6 +110,15 @@ class ProductCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    lazy var width: NSLayoutConstraint = {
+        let width = contentView.widthAnchor.constraint(equalToConstant: bounds.size.width)
+        width.isActive = true
+        return width
+    }()
+    override func systemLayoutSizeFitting(_ targetSize: CGSize, withHorizontalFittingPriority horizontalFittingPriority: UILayoutPriority, verticalFittingPriority: UILayoutPriority) -> CGSize {
+        width.constant = bounds.size.width
+        return contentView.systemLayoutSizeFitting(CGSize(width: targetSize.width, height: 380))
+    }
     private func loadUIView()  {
         contentView.backgroundColor = .white
         contentView.clipsToBounds = true
@@ -117,20 +126,17 @@ class ProductCell: UICollectionViewCell {
             contentView.addSubview(productContainerView)
         }
         productContainerView.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(contentView.snp.top).offset(8)
-            make.leading.equalTo(contentView.snp.leading) // .offset(8)
-            make.trailing.equalTo(contentView.snp.trailing) // .offset(-8)
-            make.bottom.equalTo(contentView.snp.bottom).offset(-30)
+            make.edges.equalToSuperview()
         }
         
         if !imageContainerView.isDescendant(of: productContainerView) {
             productContainerView.addSubview(imageContainerView)
         }
         imageContainerView.snp.makeConstraints { (make) -> Void in
-            make.top.equalTo(productContainerView.snp.top).offset(8)
+            make.top.equalTo(productContainerView.snp.top)
             make.leading.equalTo(productContainerView.snp.leading).offset(16)
             make.trailing.equalTo(productContainerView.snp.trailing).offset(-16)
-            make.height.equalTo(120)
+            make.height.equalTo(productContainerView).multipliedBy(0.5)
         }
         
         
@@ -138,10 +144,9 @@ class ProductCell: UICollectionViewCell {
             imageContainerView.addSubview(productImageView)
         }
         productImageView.snp.makeConstraints { (make) -> Void in
-            make.bottom.equalTo(imageContainerView.snp.bottom).offset(-4)
-            make.leading.equalTo(imageContainerView.snp.leading).offset(8)
-            make.top.equalTo(imageContainerView.snp.top).offset(4)
-            make.trailing.equalTo(imageContainerView.snp.trailing).offset(-8)
+            make.height.width.equalTo(88)
+            make.centerY.equalToSuperview()
+            make.centerX.equalToSuperview()
         }
         
         
@@ -151,7 +156,7 @@ class ProductCell: UICollectionViewCell {
         }
         lblName.snp.makeConstraints { (make) -> Void in
             make.leading.equalTo(imageContainerView.snp.leading).offset(8)
-            make.top.equalTo(productImageView.snp.bottom).offset(16)
+            make.top.equalTo(imageContainerView.snp.bottom).offset(16)
         }
         
         
@@ -161,7 +166,7 @@ class ProductCell: UICollectionViewCell {
         lblBrand.snp.makeConstraints { (make) -> Void in
             make.leading.equalTo(lblName.snp.trailing).offset(8)
             make.trailing.equalTo(imageContainerView.snp.trailing)
-            make.top.equalTo(productImageView.snp.bottom).offset(16)
+            make.top.equalTo(imageContainerView.snp.bottom).offset(16)
         }
         
         if !lblDesc.isDescendant(of: productContainerView) {
@@ -208,6 +213,7 @@ class ProductCell: UICollectionViewCell {
         didSet {
             guard let item = product else { return }
             lblName.text = product?.title
+            //lblDesc.attributedText = product?.description?.htmlAttributedString()
             lblDesc.text = product?.description
             if let brand = product?.brand_name {
                 lblBrand.text = "| \(String(describing: brand))"

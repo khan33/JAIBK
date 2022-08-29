@@ -20,9 +20,7 @@ class RequestModel: NSObject {
     }
     
     
-    var headers: [String: String] {
-        return [:]
-    }
+    
     
     var body: [String: Any?] {
         return [:]
@@ -49,6 +47,19 @@ enum RequestHTTPMethod: String {
 // MARK: - Public Functions
 
 extension RequestModel {
+    
+    var headers: [String : String] {
+        var headers: [String: String] = [ "Content-Type": "application/json",
+                                          "language_id": "1" ]
+        
+        if let token = UserDefaults.standard.string(forKey: "token"), token != "" {
+            headers["Authorization"] = "Bearer \(token)"
+        } else {
+            headers["session_id"] = UserDefaults.standard.string(forKey: "session_id")
+        }
+        return headers
+        
+    }
     
     func urlRequest() -> URLRequest {
         var endPoint = ServiceManager.shared.baseURL.appending(path)

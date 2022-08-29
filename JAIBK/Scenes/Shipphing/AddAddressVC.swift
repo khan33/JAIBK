@@ -46,9 +46,24 @@ class AddAddressVC: UIViewController {
     private var countryCodeTxt: String = ""
     private var cityTxt: String = ""
     private var phoneNoTxt: String = ""
+    var cities: [CityData]?
+    var data: AddressData?
+    private var id: String = ""
+    var cityView: PickerFieldView!
+    var cityDataSource: GenericPickerDataSource<CityData>?
+    var selectedCityItem = 0
     
+    init(data: AddressData? = nil) {
+        self.data = data
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
+        getCities()
         configNav()
         setupViews()
     }
@@ -96,13 +111,13 @@ class AddAddressVC: UIViewController {
         }
     }
     
-    private func getCities(code: String) {
-        ServiceManager.shared.sendRequest(request: AddressRequestModel.CityRequest(country_code: code), model: CityModel.self) { result in
+    private func getCities() {
+        ServiceManager.shared.sendRequest(request: AddressRequestModel.CityRequest(country_code: "AE"), model: CityModel.self) { result in
             switch result {
             case .success(let response):
                 if response.success ?? false {
                     DispatchQueue.main.async {
-                        
+                        self.cities = response.data
                     }
                 }
             case .failure(let error):
@@ -111,11 +126,26 @@ class AddAddressVC: UIViewController {
         }
     }
     
+    
+    
+    
 
 }
 extension AddAddressVC {
     fileprivate func setupViews() {
         edgesForExtendedLayout = []
+        
+        if let data = data {
+            self.firstNamtTxt = data.first_name ?? ""
+            self.lastNamtTxt = data.last_name ?? ""
+            self.streetAddressTxt = data.address ?? ""
+            self.countryTxt = data.country_name ?? ""
+            self.cityTxt = data.city_name ?? ""
+            self.phoneNoTxt = data.phone_no ?? ""
+            self.id = data.id ?? ""
+        }
+        
+        
         if !containerView.isDescendant(of: self.view) {
             self.view.addSubview(containerView)
         }
@@ -147,30 +177,49 @@ extension AddAddressVC {
             make.bottom.equalToSuperview()
         }
         
-        let productInfoView = EnquireTextFieldView(title: "First Name", placeholder: "") { text in
+        let firstNameView = EnquireTextFieldView(title: "First Name", placeholder: "") { text in
+            self.firstNamtTxt = text
         }
-        stackView.addArrangedSubview(productInfoView)
-        
-        
-        let quantity = EnquireTextFieldView(title: "Last Name", placeholder: "") { text in
-        }
-        stackView.addArrangedSubview(quantity)
-        
-        
-        let firstNameView = EnquireTextFieldView(title: "Street Address", placeholder: "") { text in
-        }
+        firstNameView.setData(text: self.firstNamtTxt)
         stackView.addArrangedSubview(firstNameView)
         
         
-        let lastNameView = EnquireTextFieldView(title: "Country", placeholder: "") { text in
+        let lastNameView = EnquireTextFieldView(title: "Last Name", placeholder: "") { text in
+            self.lastNamtTxt = text
         }
+        lastNameView.setData(text: self.lastNamtTxt)
         stackView.addArrangedSubview(lastNameView)
         
-        let emailView = EnquireTextFieldView(title: "City", placeholder: "") { text in
+        
+        let streetAddressView = EnquireTextFieldView(title: "Street Address", placeholder: "") { text in
+            self.streetAddressTxt = text
         }
-        stackView.addArrangedSubview(emailView)
+        streetAddressView.setData(text: self.streetAddressTxt)
+        stackView.addArrangedSubview(streetAddressView)
+        
+        
+        cityView = PickerFieldView(title: "City", placeholder: "Select City", icon: "down") {
+            self.cityDataSource = GenericPickerDataSource<CityData>(
+                withItems: self.cities ?? [],
+                        withRowTitle: { (data) -> String in
+                            return data.name ?? ""
+                        }, row: self.selectedCityItem,  didSelect: { (data) in
+                            self.cityView?.txtField.text = data.name
+                            self.cityTxt = data.name ?? ""
+                            
+                            self.selectedCityItem = self.cities?.firstIndex(where: {$0.name == self.cityTxt}) ?? 0
+                        })
+            self.cityView?.txtField.setupPickerField(withDataSource: self.cityDataSource!)
+        }
+        cityView.setData(text: cityTxt)
+        stackView.addArrangedSubview(cityView)
+        
+        
         let phoneNoView = EnquireTextFieldView(title: "Phone Number", placeholder: "") { text in
+            self.phoneNoTxt = text
         }
+        phoneNoView.txtField.keyboardType = .phonePad
+        phoneNoView.setData(text: self.phoneNoTxt)
         stackView.addArrangedSubview(phoneNoView)
         
         
@@ -189,11 +238,6 @@ extension AddAddressVC {
                 return
             }
             
-            if self.countryTxt == "" {
-                self.showAlert(withTitle: "Alert", message: "Select country")
-                return
-            }
-            
             if self.cityTxt == "" {
                 self.showAlert(withTitle: "Alert", message: "Select city")
                 return
@@ -203,13 +247,24 @@ extension AddAddressVC {
                 return
             }
             
-            let request = AddressRequestModel.AddAddressRequest(first_name: self.firstNamtTxt, last_name: self.lastNamtTxt, street_address: self.streetAddressTxt, country: self.countryCodeTxt, city: self.cityTxt, phone_no: self.phoneNoTxt)
-            ServiceManager.shared.sendRequest(request: request, model: CityModel.self) { result in
+            var request: RequestModel?
+            
+            if self.id != "" {
+                request = AddressRequestModel.UpdateAddressRequest(first_name: self.firstNamtTxt, last_name: self.lastNamtTxt, street_address: self.streetAddressTxt, country: "AE", city: self.cityTxt, phone_no: self.phoneNoTxt, id: self.id)
+            } else {
+                request = AddressRequestModel.AddAddressRequest(first_name: self.firstNamtTxt, last_name: self.lastNamtTxt, street_address: self.streetAddressTxt, country: "AE", city: self.cityTxt, phone_no: self.phoneNoTxt)
+            }
+            
+            
+            
+            ServiceManager.shared.sendRequest(request: request!, model: AddressModel.self) { result in
                 switch result {
                 case .success(let response):
                     if response.success ?? false {
                         DispatchQueue.main.async {
-                            
+                            self.showAlertOkAction(withTitle: "Alert", message: response.message ?? "Added successfully.") {
+                                self.navigationController?.popViewController(animated: true)
+                            }
                         }
                     }
                 case .failure(let error):

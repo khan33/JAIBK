@@ -26,8 +26,8 @@ class OrderViewCell: UICollectionViewCell {
     private (set) lazy var lblOrderDate: UILabel = {[unowned self] in
         let lbl = UILabel()
         lbl.numberOfLines = 1
-        lbl.text = "Order at E-comm : Jan 1, 2021"
-        lbl.font = UIFont(name: AppFontName.book, size: 12)
+        lbl.text = ""
+        lbl.font = UIFont(name: AppFontName.book, size: 14)
         lbl.textColor = UIColor.hexStringToUIColor(hex: "#000000")
         return lbl
     }()
@@ -132,13 +132,10 @@ class OrderViewCell: UICollectionViewCell {
         didSet {
             guard let data = order else { return }
             lblOrderId.text = data.order_id
-            lblOrderDate.text = data.added_on
+            lblOrderDate.text = "Order at E-comm: " + (data.added_on ?? "")
             itemsView.lblValue.text = "\(data.items!) Items purchased"
             statusView.lblValue.text = data.status
             priceView.lblValue.text = "AED \(data.price!)"
         }
     }
-    
-    
-    
 }

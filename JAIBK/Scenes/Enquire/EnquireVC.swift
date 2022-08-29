@@ -65,6 +65,7 @@ class EnquireVC: UIViewController {
                 if response.success ?? false {
                     DispatchQueue.main.async {
                         self.enquireData = response.data
+                        
                         self.collectionView.reloadData()
                     }
                 }
@@ -98,6 +99,11 @@ extension EnquireVC: UICollectionViewDelegate, UICollectionViewDataSource,  UICo
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        if enquireData?.count ?? 0 == 0 {
+            collectionView.setEmptyView(title: "No Record Found", message: "")
+        } else {
+            collectionView.restore()
+        }
         return enquireData?.count ?? 0
     }
     
@@ -109,7 +115,7 @@ extension EnquireVC: UICollectionViewDelegate, UICollectionViewDataSource,  UICo
     
     func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let width = collectionView.frame.width
-        return CGSize(width: width, height: 200)
+        return CGSize(width: width, height: 170)
     }
     
     
@@ -119,7 +125,7 @@ extension EnquireVC: UICollectionViewDelegate, UICollectionViewDataSource,  UICo
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        if let id = enquireData?[indexPath.row].product_id {
+        if let id = enquireData?[indexPath.row].id {
             let vc = EnquireDetailVC(product_id: id)
             self.navigationController?.pushViewController(vc, animated: true)
         }

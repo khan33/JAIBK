@@ -23,3 +23,13 @@ struct AddressModel : Codable {
 		case data = "data"
 	}
 }
+
+struct AddAddressModel : Codable {
+    let success : Bool?
+    let message: String?
+
+    enum CodingKeys: String, CodingKey {
+        case success = "success"
+        case message = "data"
+    }
+}

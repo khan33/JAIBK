@@ -77,18 +77,22 @@ extension OrdersVC: UICollectionViewDataSource, UICollectionViewDelegate, UIColl
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        if orders?.count ?? 0 == 0 {
+            collectionView.setEmptyView(title: "No Record Found", message: "")
+        } else {
+            collectionView.restore()
+        }
         return orders?.count ?? 0
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(with: OrderViewCell.self, for: indexPath)
-    
         cell.order = orders?[indexPath.row]
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: collectionView.frame.width - 20, height: 240)
+        return CGSize(width: collectionView.frame.width - 20, height: 200)
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
@@ -106,10 +110,5 @@ class  OrderRequest: RequestModel {
         return Constant.ServiceConstant.ORDER_LIST
     }
     
-    override var headers: [String : String] {
-        return [
-            "Content-Type" : "application/json",
-            "session_id": "okbv2pGg4jldTp6WyV5osuNl76bkSW01BRi2Mgpc"
-        ]
-    }
+    
 }

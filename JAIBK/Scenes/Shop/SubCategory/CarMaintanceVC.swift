@@ -167,6 +167,9 @@ extension CarMaintanceVC: UICollectionViewDataSource, UICollectionViewDelegate, 
             let cell = collectionView.dequeueReusableCell(with: CategoryDescriptionCell.self, for: indexPath)
             cell.lblHeading.attributedText = self.carMaintanceDetail?[indexPath.row].description?.htmlAttributedString()
             cell.lblDesc.attributedText = self.carMaintanceDetail?[indexPath.row].sub_description?.htmlAttributedString()
+            if let img = self.carMaintanceDetail?[indexPath.row].image {
+                cell.productImageView.sd_setImage(with: URL(string: Constant.baseURL + "images/carMaintanence/" + img ), placeholderImage: UIImage(named: "CarMaintanence"), options: .retryFailed)
+            }
             return cell
         } else if indexPath.section == 1 {
             let cell = collectionView.dequeueReusableCell(with: ViewAllCell.self, for: indexPath)
@@ -181,7 +184,7 @@ extension CarMaintanceVC: UICollectionViewDataSource, UICollectionViewDelegate, 
     
     func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         if indexPath.section == 0  {
-            return CGSize(width: collectionView.frame.width - 20, height: 280)
+            return CGSize(width: collectionView.frame.width - 20, height: 420)
         } else if indexPath.section == 1 {
             return CGSize(width: collectionView.frame.width - 20, height: 55)
         }
@@ -198,12 +201,6 @@ class CarMaintanenceRequest : RequestModel {
     override var path: String {
         return Constant.ServiceConstant.CAR_MAINTANCE
     }
-    override var headers: [String : String] {
-        return [
-            "Content-Type" : "application/json",
-            "language_id": "1"
-        ]
-    }
     
 }
 
@@ -215,12 +212,6 @@ class CarMaintanenceDetailRequest : RequestModel {
     }
     override var path: String {
         return Constant.ServiceConstant.CAR_MAINTANCE_DETAIL + "/" + id
-    }
-    override var headers: [String : String] {
-        return [
-            "Content-Type" : "application/json",
-            "language_id": "1"
-        ]
     }
     
 }
